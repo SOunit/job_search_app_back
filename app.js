@@ -1,6 +1,7 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const jobRoutes = require("./routes/job-routes");
+const skillRoutes = require("./routes/skill-routes");
 const cors = require("cors");
 const bodyParser = require("body-parser");
 
@@ -10,6 +11,7 @@ app.use(bodyParser.json());
 app.use(cors());
 
 app.use("/api/jobs", jobRoutes);
+app.use("/api/skills", skillRoutes);
 
 try {
   mongoose
