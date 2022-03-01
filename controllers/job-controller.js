@@ -18,6 +18,26 @@ const getJobs = async (req, res, next) => {
   res.json({ jobs: jobs.map((job) => job.toObject({ getters: true })) });
 };
 
+const getJobById = async (req, res, next) => {
+  const jobId = req.params.jobId;
+
+  let job;
+  try {
+    job = await Job.findById(jobId);
+  } catch (err) {
+    console.log(err);
+
+    // FIXME
+    // add handling error in parent
+    return next();
+    // const error = new Error("Fetching Jobs failed. Please try again later");
+    // return next(error);
+  }
+
+  // mongoose object to plain object
+  res.json({ job: job.toObject({ getters: true }) });
+};
+
 const createJob = async (req, res, next) => {
   const { title } = req.body;
 
@@ -33,4 +53,5 @@ const createJob = async (req, res, next) => {
 };
 
 exports.getJobs = getJobs;
+exports.getJobById = getJobById;
 exports.createJob = createJob;
