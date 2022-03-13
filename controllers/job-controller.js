@@ -39,9 +39,16 @@ const getJobById = async (req, res, next) => {
 };
 
 const createJob = async (req, res, next) => {
-  const { title } = req.body;
+  const { title, companyName, city, payment, description } = req.body;
 
-  const job = new Job({ title: title, skills: [] });
+  const job = new Job({
+    title: title,
+    skills: [],
+    companyName,
+    city,
+    payment,
+    description,
+  });
 
   try {
     await job.save();
