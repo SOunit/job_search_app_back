@@ -7,4 +7,4 @@ router.get("/", jobController.getJobs);
 router.get("/:jobId", jobController.getJobById);
 router.post("/", jobController.createJob);
 
-module.exports = router;
+export default router;

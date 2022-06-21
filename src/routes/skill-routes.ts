@@ -9,4 +9,4 @@ router.get("/", skillController.getSkills);
 // POST & http://localhost:5000/api/skills
 router.post("/", skillController.createSkill);
 
-module.exports = router;
+export default router;
