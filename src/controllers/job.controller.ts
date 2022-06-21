@@ -39,12 +39,12 @@ export const createJob = async (req: Request, res: Response) => {
       await DatabaseService.getInstance().collections.jobs?.insertOne(newJob);
 
     result
-      ? res
-          .status(201)
-          .send(`Successfully created a new job with id ${result.insertedId}`)
-      : res.status(500).send("Failed to create a new job.");
+      ? res.status(201).json({
+          message: `Successfully created a new job with id ${result.insertedId}`,
+        })
+      : res.status(500).json({ message: "Failed to create a new job." });
   } catch (err) {
     console.error(err);
-    res.status(400).send((err as Error).message);
+    res.status(400).json({ message: (err as Error).message });
   }
 };

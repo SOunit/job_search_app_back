@@ -1,39 +1,34 @@
 import { Request, Response } from "express";
-
-const Skill = require("../models/skill");
+import Skill from "../models/skill";
+import DatabaseService from "../services/database.service";
 
 export const getSkills = async (req: Request, res: Response) => {
-  let skills;
   try {
-    skills = await Skill.find();
+    const skills = (await DatabaseService.getInstance()
+      .collections.skills?.find({})
+      .toArray()) as Skill[];
 
-    // FIXME: add type to skill
-    res.json({
-      skills: skills.map((skill: any) => skill.toObject({ getters: true })),
-    });
+    res.json({ skills });
   } catch (err) {
-    console.log(err);
-
-    // FIXME
-    // add handling error in parent
-    // next();
-    // const error = new Error("Fetching skills failed. Please try again later");
-    // return next(error);
+    res.status(500).json({ message: (err as Error).message });
   }
-
-  // mongoose object to plain object
 };
 
 export const createSkill = async (req: Request, res: Response) => {
-  const { title } = req.body;
-
-  const skill = new Skill({ title });
-
   try {
-    await skill.save();
-  } catch (err) {
-    console.log(err);
-  }
+    const newSkill = req.body as Skill;
+    const result =
+      await DatabaseService.getInstance().collections.skills?.insertOne(
+        newSkill
+      );
 
-  res.json({ skill: skill.toObject({ getters: true }) });
+    result
+      ? res.status(201).json({
+          message: `Successfully created a new skill with id ${result.insertedId}`,
+        })
+      : res.status(500).json({ message: "Failed to create a new skill." });
+  } catch (err) {
+    console.error(err);
+    res.status(400).json({ message: (err as Error).message });
+  }
 };
