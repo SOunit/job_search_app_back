@@ -1,12 +1,9 @@
-const express = require("express");
-const skillController = require("../controllers/skill-controller");
+import express from "express";
+import { createSkill, getSkills } from "../controllers/skill.controller";
 
 const router = express.Router();
 
-// GET & http://localhost:5000/api/skills
-router.get("/", skillController.getSkills);
-
-// POST & http://localhost:5000/api/skills
-router.post("/", skillController.createSkill);
+router.get("/", getSkills);
+router.post("/", createSkill);
 
 export default router;
