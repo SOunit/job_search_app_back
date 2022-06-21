@@ -1,3 +1,5 @@
+// https://www.mongodb.com/compatibility/using-typescript-with-mongodb-tutorial
+
 import * as mongoDB from "mongodb";
 import Job from "../models/job";
 import Skill from "../models/skill";
