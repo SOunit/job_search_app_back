@@ -6,6 +6,7 @@ const cors = require("cors");
 const bodyParser = require("body-parser");
 
 const app = express();
+const PORT = process.env.PORT || 5000;
 
 app.use(bodyParser.json());
 app.use(cors());
@@ -20,7 +21,9 @@ try {
     )
     .then(() => {
       // process.env.PORT come from Heroku
-      app.listen(process.env.PORT || 5000);
+      app.listen(PORT, () => {
+        console.log(`listen on ${PORT}`);
+      });
     });
 } catch (err) {
   console.log(err);
