@@ -20,7 +20,6 @@ class DatabaseService {
   }
 
   public async connectToDatabase() {
-    // FIXME:
     const client = new mongoDB.MongoClient(process.env.DB_CONN_STRING!);
 
     await client.connect();
