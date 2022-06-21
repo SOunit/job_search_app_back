@@ -1,26 +1,30 @@
+import { Request, Response } from "express";
+
 const Skill = require("../models/skill");
 
-const getSkills = async (req, res, next) => {
+export const getSkills = async (req: Request, res: Response) => {
   let skills;
   try {
     skills = await Skill.find();
+
+    // FIXME: add type to skill
+    res.json({
+      skills: skills.map((skill: any) => skill.toObject({ getters: true })),
+    });
   } catch (err) {
     console.log(err);
 
     // FIXME
     // add handling error in parent
-    next();
+    // next();
     // const error = new Error("Fetching skills failed. Please try again later");
     // return next(error);
   }
 
   // mongoose object to plain object
-  res.json({
-    skills: skills.map((skill) => skill.toObject({ getters: true })),
-  });
 };
 
-const createSkill = async (req, res, next) => {
+export const createSkill = async (req: Request, res: Response) => {
   const { title } = req.body;
 
   const skill = new Skill({ title });
@@ -33,6 +37,3 @@ const createSkill = async (req, res, next) => {
 
   res.json({ skill: skill.toObject({ getters: true }) });
 };
-
-exports.getSkills = getSkills;
-exports.createSkill = createSkill;
