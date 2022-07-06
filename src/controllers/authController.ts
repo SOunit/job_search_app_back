@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import User from "../models/user";
 import DatabaseService from "../services/database.service";
+import { generateToken } from "../services/token.service";
 import { getUserByEmailAndPassword } from "../services/user.service";
 
 export const signup = async (req: Request, res: Response) => {
@@ -17,9 +18,16 @@ export const signup = async (req: Request, res: Response) => {
     const result =
       await DatabaseService.getInstance().collections.users?.insertOne(newUser);
 
-    result
-      ? res.status(201).json({ ...newUser, _id: result.insertedId })
-      : res.status(500).json({ message: "Failed to signup" });
+    if (!result) {
+      return res.status(500).json({ message: "Failed to signup" });
+    }
+
+    const userId = result.insertedId.toString();
+
+    // generate token
+    const token = generateToken(userId);
+
+    res.status(201).json({ user: { ...newUser, _id: userId }, token });
   } catch (error) {
     console.log(error);
     res.status(400).json({ message: (error as Error).message });
