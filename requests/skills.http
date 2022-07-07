@@ -5,4 +5,11 @@ GET http://localhost:5000/api/skills
 POST http://localhost:5000/api/skills
 Content-Type: application/json
 
-{ "title": "test title" }
+{ "title": "test title", "userId": "u1" }
+
+###
+
+PATCH http://localhost:5000/api/skills
+Content-Type: application/json
+
+{"title" : "test title update"}
