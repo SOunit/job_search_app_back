@@ -4,8 +4,9 @@ GET http://localhost:5000/api/skills
 
 POST http://localhost:5000/api/skills
 Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MmM3NDI2Mzc2NDE1ZmI2OWU3NmJlNTciLCJpYXQiOjE2NTcyMjU4MjcsImV4cCI6MTY1NzIyOTQyN30.RMR6XuD-YAqh6lg67BnEj2vN3eEitfPOPdZpkhlz-1Y
 
-{ "title": "test title", "userId": "u1" }
+{ "title": "test title" }
 
 ###
 
