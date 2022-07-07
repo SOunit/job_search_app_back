@@ -1,6 +1,8 @@
 import { Request, Response } from "express";
+import { decode } from "jsonwebtoken";
 import Skill from "../models/skill";
 import DatabaseService from "../services/database.service";
+import { getTokenFromAuthHeader, verifyToken } from "../services/token.service";
 
 export const getSkills = async (req: Request, res: Response) => {
   try {
@@ -16,7 +18,17 @@ export const getSkills = async (req: Request, res: Response) => {
 
 export const createSkill = async (req: Request, res: Response) => {
   try {
-    const newSkill = req.body as Skill;
+    const token = getTokenFromAuthHeader(req);
+    if (!token) {
+      return res.status(401).json({ message: "No token found" });
+    }
+    const decodedToken = verifyToken(token);
+    if (!decodedToken) {
+      return res.status(401).json({ message: "Token is invalid" });
+    }
+    const { userId } = decodedToken;
+
+    const newSkill = { ...(req.body as Skill), userId };
     const result =
       await DatabaseService.getInstance().collections.skills?.insertOne(
         newSkill
