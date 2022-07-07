@@ -24,7 +24,8 @@ export const createSkill = async (req: Request, res: Response) => {
 
     result
       ? res.status(201).json({
-          message: `Successfully created a new skill with id ${result.insertedId}`,
+          ...newSkill,
+          _id: result.insertedId,
         })
       : res.status(500).json({ message: "Failed to create a new skill." });
   } catch (err) {
