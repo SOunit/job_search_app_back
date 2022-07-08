@@ -13,7 +13,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MmM3N
 
 ###
 
-PATCH http://localhost:5000/api/skills
+PATCH http://localhost:5000/api/skills/62c862f1db055ac1792ba5da
 Content-Type: application/json
 
 {"title" : "test title update"}
