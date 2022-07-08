@@ -19,8 +19,6 @@ export function authenticateToken(
   // get userId from token
   const { userId } = decodedToken;
 
-  console.log("authToken userId", userId);
-
   // FIXME: add type
   (req as any).userId = userId;
 
