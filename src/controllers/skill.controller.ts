@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { decode } from "jsonwebtoken";
+import { ObjectId } from "mongodb";
 import Skill from "../models/skill";
 import DatabaseService from "../services/database.service";
 import { getTokenFromAuthHeader, verifyToken } from "../services/token.service";
@@ -13,6 +14,20 @@ export const getSkills = async (req: Request, res: Response) => {
     res.json({ skills });
   } catch (err) {
     res.status(500).json({ message: (err as Error).message });
+  }
+};
+
+export const getSkill = async (req: Request, res: Response) => {
+  try {
+    const skillId = req.params.skillId;
+    const skill =
+      (await DatabaseService.getInstance().collections.skills?.findOne({
+        _id: new ObjectId(skillId),
+      })) as Skill;
+
+    res.json({ skill });
+  } catch (error) {
+    res.status(500).json({ message: (error as Error).message });
   }
 };
 
