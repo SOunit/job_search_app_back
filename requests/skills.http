@@ -1,19 +1,20 @@
 GET http://localhost:5000/api/skills
 
 ### 
-GET http://localhost:5000/api/skills/62c862f1db055ac1792ba5da
+GET http://localhost:5000/api/skills/62c8a400eff18574ff50d2be
 
 ### 
 
 POST http://localhost:5000/api/skills
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MmM3NDI2Mzc2NDE1ZmI2OWU3NmJlNTciLCJpYXQiOjE2NTcyMjU4MjcsImV4cCI6MTY1NzIyOTQyN30.RMR6XuD-YAqh6lg67BnEj2vN3eEitfPOPdZpkhlz-1Y
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MmM4YTJkMzQ1MWQzZWQ3NzU2MTQ3YjciLCJpYXQiOjE2NTczMTYwNTEsImV4cCI6MTY1NzMxOTY1MX0.kNts3-BlhtyetBz9EdVwZgK0qAGkD2Lhd4j8wkwCNWY
 
 { "title": "test title" }
 
 ###
 
-PATCH http://localhost:5000/api/skills/62c862f1db055ac1792ba5da
+PATCH http://localhost:5000/api/skills/62c8a400eff18574ff50d2be
 Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MmM4YTJkMzQ1MWQzZWQ3NzU2MTQ3YjciLCJpYXQiOjE2NTczMTYwNTEsImV4cCI6MTY1NzMxOTY1MX0.kNts3-BlhtyetBz9EdVwZgK0qAGkD2Lhd4j8wkwCNWY
 
-{"title" : "test title update"}
+{"title" : "test title update 3"}

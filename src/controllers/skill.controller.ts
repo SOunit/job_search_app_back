@@ -59,18 +59,32 @@ export const updateSkill = async (req: Request, res: Response) => {
   try {
     const updatedSkill = req.body as Skill;
     const { skillId } = req.params;
+    const userId = (req as any).userId;
+
+    console.log("userId", userId);
 
     const result =
       await DatabaseService.getInstance().collections.skills?.updateOne(
         {
           _id: new ObjectId(skillId),
+          userId,
         },
         { $set: updatedSkill }
       );
 
+    if (!result) {
+      res.status(500).json({ message: "Failed to update skill." });
+    }
+
+    if (result?.matchedCount === 0) {
+      res
+        .status(500)
+        .json({ message: "Failed to update skill. No match skill found!" });
+    }
+
     console.log("result", result);
 
-    res.json({ updatedSkill, skillId });
+    res.json({ _id: skillId, ...updatedSkill });
   } catch (err) {
     console.error(err);
     res.status(400).json({ message: (err as Error).message });
