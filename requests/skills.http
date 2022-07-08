@@ -1,6 +1,9 @@
 GET http://localhost:5000/api/skills
 
 ### 
+GET http://localhost:5000/api/skills/62c862f1db055ac1792ba5da
+
+### 
 
 POST http://localhost:5000/api/skills
 Content-Type: application/json
