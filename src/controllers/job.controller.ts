@@ -9,9 +9,13 @@ export const getJobs = async (req: Request, res: Response) => {
       .collections.jobs?.aggregate([
         {
           $lookup: {
+            // join table name = skills collection
             from: "skills",
+            // local field = jobs.skills
             localField: "skills",
+            // foreignField = skills._id
             foreignField: "_id",
+            // as is necessary for lookup, overwrite if same field name
             as: "skills",
           },
         },
