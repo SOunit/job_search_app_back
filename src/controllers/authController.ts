@@ -7,6 +7,7 @@ import { getUserByEmailAndPassword } from "../services/user.service";
 export const signup = async (req: Request, res: Response) => {
   try {
     // FIXME: add validation
+    // FIXME: encrypt password
     const newUser = req.body as User;
     const { email, password } = newUser;
 
@@ -28,6 +29,27 @@ export const signup = async (req: Request, res: Response) => {
     const token = generateToken(userId);
 
     res.status(201).json({ user: { ...newUser, _id: userId }, token });
+  } catch (error) {
+    console.log(error);
+    res.status(400).json({ message: (error as Error).message });
+  }
+};
+
+export const login = async (req: Request, res: Response) => {
+  try {
+    // FIXME: add validation
+    // FIXME: encrypt password
+    const { email, password } = req.body as { email: string; password: string };
+
+    const loginUser = await getUserByEmailAndPassword(email, password);
+    if (!loginUser) {
+      throw new Error("User not exists");
+    }
+
+    // generate token
+    const token = generateToken(loginUser._id.toString());
+
+    res.status(201).json({ user: loginUser, token });
   } catch (error) {
     console.log(error);
     res.status(400).json({ message: (error as Error).message });
