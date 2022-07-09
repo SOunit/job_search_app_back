@@ -82,8 +82,6 @@ export const updateSkill = async (req: Request, res: Response) => {
         .json({ message: "Failed to update skill. No match skill found!" });
     }
 
-    console.log("result", result);
-
     res.json({ _id: skillId, ...updatedSkill });
   } catch (err) {
     console.error(err);

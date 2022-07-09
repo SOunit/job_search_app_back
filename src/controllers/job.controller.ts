@@ -71,3 +71,33 @@ export const createJob = async (req: Request, res: Response) => {
     res.status(400).json({ message: (err as Error).message });
   }
 };
+
+export const deleteJob = async (req: Request, res: Response) => {
+  try {
+    const { jobId } = req.params;
+    const userId = (req as any).userId;
+
+    const result =
+      await DatabaseService.getInstance().collections.jobs?.deleteOne({
+        _id: new ObjectId(jobId),
+        userId,
+      });
+
+    console.log(result);
+
+    if (!result) {
+      res.status(500).json({ message: "Failed to delete job." });
+    }
+
+    if (result?.deletedCount === 0) {
+      res
+        .status(500)
+        .json({ message: "Failed to delete job. No match job found!" });
+    }
+
+    res.json({ _id: jobId });
+  } catch (error) {
+    console.error(error);
+    res.status(400).json({ message: (error as Error).message });
+  }
+};
