@@ -8,8 +8,17 @@ export default class Job {
     public city: string,
     public payment: number,
     public description: string,
-    public skills: Skill[],
+    public skills: Skill[] | ObjectId[],
     public userId: string,
     public _id?: ObjectId
   ) {}
 }
+
+export type CreateJobPostData = {
+  title: string;
+  companyName: string;
+  city: string;
+  payment: number;
+  description: string;
+  skills: string[];
+};
