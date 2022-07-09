@@ -34,15 +34,24 @@ export const getJobById = async (req: Request, res: Response) => {
 
 export const createJob = async (req: Request, res: Response) => {
   try {
+    const userId = (req as any).userId as string;
     const newJob = req.body as Job;
-    const result =
-      await DatabaseService.getInstance().collections.jobs?.insertOne(newJob);
 
-    result
-      ? res.status(201).json({
-          message: `Successfully created a new job with id ${result.insertedId}`,
-        })
-      : res.status(500).json({ message: "Failed to create a new job." });
+    const result =
+      await DatabaseService.getInstance().collections.jobs?.insertOne({
+        ...newJob,
+        userId,
+      });
+
+    if (!result) {
+      return res.status(500).json({ message: "Failed to create a new job." });
+    }
+
+    res.status(201).json({
+      _id: result.insertedId,
+      ...newJob,
+      userId,
+    });
   } catch (err) {
     console.error(err);
     res.status(400).json({ message: (err as Error).message });

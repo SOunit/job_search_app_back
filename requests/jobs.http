@@ -8,6 +8,13 @@ GET http://localhost:5000/api/jobs/622d4270635526b98fe2c90b
 
 POST http://localhost:5000/api/jobs
 Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MmM4YzMxNzExOTU3ZjM0N2M1ZmFjMzUiLCJpYXQiOjE2NTczMjQzMTEsImV4cCI6MTY1NzMyNzkxMX0.mX-WgAlHANl6ubjA2Jp9biomiSha796xQH8qlof8esM
 
-{ "title": "title", "companyName": "test company", "city": "test city", "payment": 20, "description": "test description" }
+{ 
+    "title": "title"
+, "companyName": "test company"
+, "city": "test city"
+, "payment": 20
+, "description": "test description"
+, "skillIds": ["62c8b652d512e9bfea6c6a33", "62c8ad8e3201588a60c966fc"] }
 

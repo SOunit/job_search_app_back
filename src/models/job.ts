@@ -9,6 +9,7 @@ export default class Job {
     public payment: number,
     public description: string,
     public skills: Skill[],
+    public userId: string,
     public _id?: ObjectId
   ) {}
 }
