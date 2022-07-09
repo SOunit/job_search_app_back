@@ -86,11 +86,11 @@ export const deleteJob = async (req: Request, res: Response) => {
     console.log(result);
 
     if (!result) {
-      res.status(500).json({ message: "Failed to delete job." });
+      return res.status(500).json({ message: "Failed to delete job." });
     }
 
     if (result?.deletedCount === 0) {
-      res
+      return res
         .status(500)
         .json({ message: "Failed to delete job. No match job found!" });
     }

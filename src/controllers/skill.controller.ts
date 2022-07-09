@@ -73,11 +73,11 @@ export const updateSkill = async (req: Request, res: Response) => {
       );
 
     if (!result) {
-      res.status(500).json({ message: "Failed to update skill." });
+      return res.status(500).json({ message: "Failed to update skill." });
     }
 
     if (result?.matchedCount === 0) {
-      res
+      return res
         .status(500)
         .json({ message: "Failed to update skill. No match skill found!" });
     }
