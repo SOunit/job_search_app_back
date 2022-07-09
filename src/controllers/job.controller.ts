@@ -6,7 +6,16 @@ import DatabaseService from "../services/database.service";
 export const getJobs = async (req: Request, res: Response) => {
   try {
     const jobs = (await DatabaseService.getInstance()
-      .collections.jobs?.find({})
+      .collections.jobs?.aggregate([
+        {
+          $lookup: {
+            from: "skills",
+            localField: "skills",
+            foreignField: "_id",
+            as: "skills",
+          },
+        },
+      ])
       .toArray()) as Job[];
 
     res.json({ jobs });
