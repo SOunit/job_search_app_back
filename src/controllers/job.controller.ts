@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { ObjectId } from "mongodb";
-import Job from "../models/job";
+import Job, { CreateJobPostData } from "../models/job";
 import DatabaseService from "../services/database.service";
 
 export const getJobs = async (req: Request, res: Response) => {
@@ -35,13 +35,15 @@ export const getJobById = async (req: Request, res: Response) => {
 export const createJob = async (req: Request, res: Response) => {
   try {
     const userId = (req as any).userId as string;
-    const newJob = req.body as Job;
+    const createJobPostData = req.body as CreateJobPostData;
+    const skills = createJobPostData.skills.map((skill) => new ObjectId(skill));
+    const newJob = { ...createJobPostData, skills, userId } as Job;
+
+    // add validation
+    // check if all props exists
 
     const result =
-      await DatabaseService.getInstance().collections.jobs?.insertOne({
-        ...newJob,
-        userId,
-      });
+      await DatabaseService.getInstance().collections.jobs?.insertOne(newJob);
 
     if (!result) {
       return res.status(500).json({ message: "Failed to create a new job." });
@@ -50,7 +52,6 @@ export const createJob = async (req: Request, res: Response) => {
     res.status(201).json({
       _id: result.insertedId,
       ...newJob,
-      userId,
     });
   } catch (err) {
     console.error(err);
