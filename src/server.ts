@@ -15,6 +15,8 @@ app.use("/api/jobs", jobRoutes);
 app.use("/api/skills", skillRoutes);
 app.use("/api/auth", authRoutes);
 
+// FIXME: add error handling?
+
 try {
   DatabaseService.getInstance()
     .connectToDatabase()

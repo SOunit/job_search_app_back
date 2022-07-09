@@ -72,6 +72,38 @@ export const createJob = async (req: Request, res: Response) => {
   }
 };
 
+export const updateJob = async (req: Request, res: Response) => {
+  try {
+    const updatedJob = req.body as Job;
+    const { jobId } = req.params;
+    const userId = (req as any).userId;
+
+    const result =
+      await DatabaseService.getInstance().collections.jobs?.updateOne(
+        {
+          _id: new ObjectId(jobId),
+          userId,
+        },
+        { $set: updatedJob }
+      );
+
+    if (!result) {
+      return res.status(500).json({ message: "Failed to update job." });
+    }
+
+    if (result?.matchedCount === 0) {
+      return res
+        .status(500)
+        .json({ message: "Failed to update job. No match job found!" });
+    }
+
+    res.json({ _id: jobId, ...updatedJob });
+  } catch (err) {
+    console.error(err);
+    res.status(400).json({ message: (err as Error).message });
+  }
+};
+
 export const deleteJob = async (req: Request, res: Response) => {
   try {
     const { jobId } = req.params;
