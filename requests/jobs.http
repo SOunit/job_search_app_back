@@ -8,7 +8,7 @@ GET http://localhost:5000/api/jobs/622d4270635526b98fe2c90b
 
 POST http://localhost:5000/api/jobs
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MmM5ZjI3NDc4YTljZTc3MzgxZGQ1NjgiLCJpYXQiOjE2NTc0MDE5NzIsImV4cCI6MTY1NzQwNTU3Mn0.unhf8Hg4P0hQny-dUs2s0qqUVdILBrQitkOvxWM8OBU
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MmM5ZjViN2Y2N2EwN2YyODRiNWFlZWEiLCJpYXQiOjE2NTc0MDgxMjIsImV4cCI6MTY1NzQxMTcyMn0.gbRUM0HbCOyWazSJXOekI3-gqUHPfraMOPH677FnWG4
 
 { 
     "title": "title"
@@ -18,3 +18,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MmM5Z
 , "description": "test description"
 , "skills": ["62c9f29178a9ce77381dd569"] }
 
+###
+
+DELETE http://localhost:5000/api/jobs/62ca0a91fd9b358c0bfa95fb
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MmM5ZjViN2Y2N2EwN2YyODRiNWFlZWEiLCJpYXQiOjE2NTc0MDgxMjIsImV4cCI6MTY1NzQxMTcyMn0.gbRUM0HbCOyWazSJXOekI3-gqUHPfraMOPH677FnWG4
