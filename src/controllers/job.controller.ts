@@ -29,10 +29,10 @@ export const getJobs = async (req: Request, res: Response) => {
 };
 
 export const getJobById = async (req: Request, res: Response) => {
-  const jobId = req.params.jobId;
-  const query = { _id: new ObjectId(jobId) };
-
   try {
+    const jobId = req.params.jobId;
+    const query = { _id: new ObjectId(jobId) };
+
     const job = (await DatabaseService.getInstance().collections.jobs?.findOne(
       query
     )) as Job;
@@ -42,6 +42,38 @@ export const getJobById = async (req: Request, res: Response) => {
     res.status(404).json({
       message: `Unable to find matching document with id: ${req.params.id}`,
     });
+  }
+};
+
+export const searchJobs = async (req: Request, res: Response) => {
+  try {
+    const { title } = req.query;
+
+    console.log("title", title, req.query);
+
+    const pipeline = [
+      { $match: { title } },
+      {
+        $lookup: {
+          // join table name = skills collection
+          from: "skills",
+          // local field = jobs.skills
+          localField: "skills",
+          // foreignField = skills._id
+          foreignField: "_id",
+          // as is necessary for lookup, overwrite if same field name
+          as: "skills",
+        },
+      },
+    ];
+
+    const jobs = (await DatabaseService.getInstance()
+      .collections.jobs?.aggregate(pipeline)
+      .toArray()) as Job[];
+
+    res.json({ jobs });
+  } catch (error) {
+    res.status(500).json({ message: (error as Error).message });
   }
 };
 

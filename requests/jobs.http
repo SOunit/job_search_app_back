@@ -2,7 +2,11 @@ GET http://localhost:5000/api/jobs
 
 ###
 
-GET http://localhost:5000/api/jobs/622d4270635526b98fe2c90b
+GET http://localhost:5000/api/jobs/62c9f2b778a9ce77381dd56a
+
+###
+
+GET http://localhost:5000/api/jobs/search?title=title
 
 ###
 
