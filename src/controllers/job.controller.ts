@@ -55,13 +55,9 @@ export const searchJobs = async (req: Request, res: Response) => {
       { $match: { title } },
       {
         $lookup: {
-          // join table name = skills collection
           from: "skills",
-          // local field = jobs.skills
           localField: "skills",
-          // foreignField = skills._id
           foreignField: "_id",
-          // as is necessary for lookup, overwrite if same field name
           as: "skills",
         },
       },
