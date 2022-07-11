@@ -1,9 +1,14 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { ObjectId } from "mongodb";
+import { CustomError } from "../middleware/defaultErrorHandler";
 import Job, { CreateJobPostData } from "../models/job";
 import DatabaseService from "../services/database.service";
 
-export const getJobs = async (req: Request, res: Response) => {
+export const getJobs = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const jobs = (await DatabaseService.getInstance()
       .collections.jobs?.aggregate([
@@ -23,12 +28,17 @@ export const getJobs = async (req: Request, res: Response) => {
       .toArray()) as Job[];
 
     res.json({ jobs });
-  } catch (err) {
-    res.status(500).json({ message: (err as Error).message });
+  } catch (error) {
+    (error as CustomError).statusCode = 500;
+    next(error);
   }
 };
 
-export const getJobById = async (req: Request, res: Response) => {
+export const getJobById = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const jobId = req.params.jobId;
     const query = { _id: new ObjectId(jobId) };
@@ -38,14 +48,17 @@ export const getJobById = async (req: Request, res: Response) => {
     )) as Job;
 
     res.json({ job });
-  } catch (err) {
-    res.status(404).json({
-      message: `Unable to find matching document with id: ${req.params.id}`,
-    });
+  } catch (error) {
+    (error as CustomError).statusCode = 404;
+    next(error);
   }
 };
 
-export const searchJobs = async (req: Request, res: Response) => {
+export const searchJobs = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const { title } = req.query;
 
@@ -69,11 +82,16 @@ export const searchJobs = async (req: Request, res: Response) => {
 
     res.json({ jobs });
   } catch (error) {
-    res.status(500).json({ message: (error as Error).message });
+    (error as CustomError).statusCode = 500;
+    next(error);
   }
 };
 
-export const createJob = async (req: Request, res: Response) => {
+export const createJob = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const userId = (req as any).userId as string;
     const createJobPostData = req.body as CreateJobPostData;
@@ -94,13 +112,17 @@ export const createJob = async (req: Request, res: Response) => {
       _id: result.insertedId,
       ...newJob,
     });
-  } catch (err) {
-    console.error(err);
-    res.status(400).json({ message: (err as Error).message });
+  } catch (error) {
+    (error as CustomError).statusCode = 400;
+    next(error);
   }
 };
 
-export const updateJob = async (req: Request, res: Response) => {
+export const updateJob = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const updatedJob = req.body as Job;
     const { jobId } = req.params;
@@ -126,13 +148,17 @@ export const updateJob = async (req: Request, res: Response) => {
     }
 
     res.json({ _id: jobId, ...updatedJob });
-  } catch (err) {
-    console.error(err);
-    res.status(400).json({ message: (err as Error).message });
+  } catch (error) {
+    (error as CustomError).statusCode = 400;
+    next(error);
   }
 };
 
-export const deleteJob = async (req: Request, res: Response) => {
+export const deleteJob = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const { jobId } = req.params;
     const userId = (req as any).userId;
@@ -157,7 +183,7 @@ export const deleteJob = async (req: Request, res: Response) => {
 
     res.json({ _id: jobId });
   } catch (error) {
-    console.error(error);
-    res.status(400).json({ message: (error as Error).message });
+    (error as CustomError).statusCode = 400;
+    next(error);
   }
 };

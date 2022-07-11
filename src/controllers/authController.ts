@@ -46,7 +46,11 @@ export const signup = async (
   }
 };
 
-export const login = async (req: Request, res: Response) => {
+export const login = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     // FIXME: add validation
     const { email, password } = req.body as { email: string; password: string };
@@ -61,7 +65,7 @@ export const login = async (req: Request, res: Response) => {
 
     res.status(201).json({ user: loginUser, token });
   } catch (error) {
-    console.log(error);
-    res.status(400).json({ message: (error as Error).message });
+    (error as CustomError).statusCode = 400;
+    next(error);
   }
 };
