@@ -4,7 +4,7 @@ Content-Type: application/json
 {
     "firstName": "test firstName",
     "lastName": "test lastName",
-    "email": "test3@email",
+    "email": "test@email",
     "password": "test password"
 }
 
@@ -14,7 +14,7 @@ POST http://localhost:5000/api/auth/login
 Content-Type: application/json
 
 {
-    "email": "test3@email",
+    "email": "test@email",
     "password": "test password"
 }
 

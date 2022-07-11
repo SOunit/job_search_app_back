@@ -1,20 +1,26 @@
 import { Request, Response } from "express";
 import User from "../models/user";
 import DatabaseService from "../services/database.service";
+import { hash } from "../services/encrypt.service";
 import { generateToken } from "../services/token.service";
-import { getUserByEmailAndPassword } from "../services/user.service";
+import {
+  getUserByEmail,
+  getUserByEmailAndPassword,
+} from "../services/user.service";
 
 export const signup = async (req: Request, res: Response) => {
   try {
     // FIXME: add validation
-    // FIXME: encrypt password
-    const newUser = req.body as User;
-    const { email, password } = newUser;
+    const postData = req.body as User;
+    const { email, password } = postData;
 
-    const existingUser = await getUserByEmailAndPassword(email, password);
+    const existingUser = await getUserByEmail(email);
     if (existingUser) {
       throw new Error("User already exists");
     }
+
+    const hashedPassword = await hash(password);
+    const newUser = { ...postData, password: hashedPassword };
 
     const result =
       await DatabaseService.getInstance().collections.users?.insertOne(newUser);
@@ -38,7 +44,6 @@ export const signup = async (req: Request, res: Response) => {
 export const login = async (req: Request, res: Response) => {
   try {
     // FIXME: add validation
-    // FIXME: encrypt password
     const { email, password } = req.body as { email: string; password: string };
 
     const loginUser = await getUserByEmailAndPassword(email, password);
