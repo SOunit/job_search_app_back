@@ -55,7 +55,7 @@ export const createSkill = async (
     const newSkill = { ...(req.body as Skill), userId };
     const { error } = validateSkill(newSkill);
     if (error) {
-      next(error);
+      return next(error);
     }
 
     // create new skill
@@ -86,9 +86,15 @@ export const updateSkill = async (
   next: NextFunction
 ) => {
   try {
-    const updatedSkill = req.body as Skill;
+    const postData = req.body as Skill;
+    const userId = (req as AuthorizedRequest).userId;
     const { skillId } = req.params;
-    const userId = (req as any).userId;
+    const updatedSkill = { ...postData, userId };
+
+    const { error } = validateSkill(updatedSkill);
+    if (error) {
+      return next(error);
+    }
 
     const result =
       await DatabaseService.getInstance().collections.skills?.updateOne(

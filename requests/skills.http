@@ -1,7 +1,7 @@
 GET http://localhost:5000/api/skills
 
 ### 
-GET http://localhost:5000/api/skills/62c8a400eff18574ff50d2be
+GET http://localhost:5000/api/skills/62c9f29178a9ce77381dd569
 
 ### 
 
@@ -13,7 +13,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MmNjO
 
 ###
 
-PATCH http://localhost:5000/api/skills/62c8a400eff18574ff50d2be
+PATCH http://localhost:5000/api/skills/62cc91a2891500c12a9bd427
 Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MmNjODVlN2M0YWMxNTEwNDdhOGQzM2YiLCJpYXQiOjE2NTc1NzIxNTMsImV4cCI6MTY1NzU3NTc1M30.uAVzh2UfQVUrnzVN5a9hi3_NnBDJ22lyQWjXTYzMWnc
 
