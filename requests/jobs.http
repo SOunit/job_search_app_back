@@ -12,7 +12,7 @@ GET http://localhost:5000/api/jobs/search?title=title
 
 POST http://localhost:5000/api/jobs
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MmM5ZjViN2Y2N2EwN2YyODRiNWFlZWEiLCJpYXQiOjE2NTc0MDkxNDQsImV4cCI6MTY1NzQxMjc0NH0.INFXVWxAg1Lu0Y-zArHjeINNQk90jeNnUEEUiWikWOc
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MmNjODVlN2M0YWMxNTEwNDdhOGQzM2YiLCJpYXQiOjE2NTc1NzQzMTIsImV4cCI6MTY1NzU3NzkxMn0.3d5lzLZCwXVnEUxVQneEDrD324qoIokJ005Wm9f15jI
 
 { 
     "title": "title"
