@@ -1,4 +1,5 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
+import { CustomError } from "../middleware/defaultErrorHandler";
 import User from "../models/user";
 import DatabaseService from "../services/database.service";
 import { hash } from "../services/encrypt.service";
@@ -8,7 +9,11 @@ import {
   getUserByEmailAndPassword,
 } from "../services/user.service";
 
-export const signup = async (req: Request, res: Response) => {
+export const signup = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     // FIXME: add validation
     const postData = req.body as User;
@@ -36,12 +41,16 @@ export const signup = async (req: Request, res: Response) => {
 
     res.status(201).json({ user: { ...newUser, _id: userId }, token });
   } catch (error) {
-    console.log(error);
-    res.status(400).json({ message: (error as Error).message });
+    (error as CustomError).statusCode = 400;
+    next(error);
   }
 };
 
-export const login = async (req: Request, res: Response) => {
+export const login = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     // FIXME: add validation
     const { email, password } = req.body as { email: string; password: string };
@@ -56,7 +65,7 @@ export const login = async (req: Request, res: Response) => {
 
     res.status(201).json({ user: loginUser, token });
   } catch (error) {
-    console.log(error);
-    res.status(400).json({ message: (error as Error).message });
+    (error as CustomError).statusCode = 400;
+    next(error);
   }
 };

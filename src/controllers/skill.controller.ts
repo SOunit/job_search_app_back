@@ -1,21 +1,31 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { ObjectId } from "mongodb";
+import { CustomError } from "../middleware/defaultErrorHandler";
 import Skill from "../models/skill";
 import DatabaseService from "../services/database.service";
 
-export const getSkills = async (req: Request, res: Response) => {
+export const getSkills = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const skills = (await DatabaseService.getInstance()
       .collections.skills?.find({})
       .toArray()) as Skill[];
 
     res.json({ skills });
-  } catch (err) {
-    res.status(500).json({ message: (err as Error).message });
+  } catch (error) {
+    (error as CustomError).statusCode = 500;
+    next(error);
   }
 };
 
-export const getSkill = async (req: Request, res: Response) => {
+export const getSkill = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const skillId = req.params.skillId;
     const skill =
@@ -25,11 +35,16 @@ export const getSkill = async (req: Request, res: Response) => {
 
     res.json({ skill });
   } catch (error) {
-    res.status(500).json({ message: (error as Error).message });
+    (error as CustomError).statusCode = 500;
+    next(error);
   }
 };
 
-export const createSkill = async (req: Request, res: Response) => {
+export const createSkill = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     // get userId from token
     // FIXME: add type
@@ -49,13 +64,17 @@ export const createSkill = async (req: Request, res: Response) => {
           _id: result.insertedId,
         })
       : res.status(500).json({ message: "Failed to create a new skill." });
-  } catch (err) {
-    console.error(err);
-    res.status(400).json({ message: (err as Error).message });
+  } catch (error) {
+    (error as CustomError).statusCode = 400;
+    next(error);
   }
 };
 
-export const updateSkill = async (req: Request, res: Response) => {
+export const updateSkill = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const updatedSkill = req.body as Skill;
     const { skillId } = req.params;
@@ -83,8 +102,8 @@ export const updateSkill = async (req: Request, res: Response) => {
     }
 
     res.json({ _id: skillId, ...updatedSkill });
-  } catch (err) {
-    console.error(err);
-    res.status(400).json({ message: (err as Error).message });
+  } catch (error) {
+    (error as CustomError).statusCode = 400;
+    next(error);
   }
 };

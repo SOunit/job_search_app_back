@@ -4,6 +4,7 @@ import skillRoutes from "./routes/skill-routes";
 import cors from "cors";
 import DatabaseService from "./services/database.service";
 import authRoutes from "./routes/authRoutes";
+import { defaultErrorHandler } from "./middleware/defaultErrorHandler";
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -15,7 +16,9 @@ app.use("/api/jobs", jobRoutes);
 app.use("/api/skills", skillRoutes);
 app.use("/api/auth", authRoutes);
 
-// FIXME: add error handling?
+// The default error handler
+// http://expressjs.com/en/guide/error-handling.html#error-handling
+app.use(defaultErrorHandler);
 
 try {
   DatabaseService.getInstance()
