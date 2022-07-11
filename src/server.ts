@@ -1,9 +1,10 @@
-import express from "express";
+import express, { NextFunction, Request, Response } from "express";
 import jobRoutes from "./routes/job-routes";
 import skillRoutes from "./routes/skill-routes";
 import cors from "cors";
 import DatabaseService from "./services/database.service";
 import authRoutes from "./routes/authRoutes";
+import { handleError } from "./controllers/errorController";
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -15,7 +16,7 @@ app.use("/api/jobs", jobRoutes);
 app.use("/api/skills", skillRoutes);
 app.use("/api/auth", authRoutes);
 
-// FIXME: add error handling?
+app.use(handleError);
 
 try {
   DatabaseService.getInstance()
