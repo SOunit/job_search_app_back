@@ -8,6 +8,7 @@ import {
   getUserByEmail,
   getUserByEmailAndPassword,
 } from "../services/user.service";
+import { validateSignup } from "../validators/auth.validator";
 
 export const signup = async (
   req: Request,
@@ -15,28 +16,35 @@ export const signup = async (
   next: NextFunction
 ) => {
   try {
-    // FIXME: add validation
     const postData = req.body as User;
+
+    // validate
+    const { error } = validateSignup(postData);
+    if (error) {
+      next(error);
+    }
+
     const { email, password } = postData;
 
+    // check user exist
     const existingUser = await getUserByEmail(email);
     if (existingUser) {
       throw new Error("User already exists");
     }
 
+    // encrypt
     const hashedPassword = await hash(password);
     const newUser = { ...postData, password: hashedPassword };
 
+    // create user
     const result =
       await DatabaseService.getInstance().collections.users?.insertOne(newUser);
-
     if (!result) {
       return res.status(500).json({ message: "Failed to signup" });
     }
 
-    const userId = result.insertedId.toString();
-
     // generate token
+    const userId = result.insertedId.toString();
     const token = generateToken(userId);
 
     res.status(201).json({ user: { ...newUser, _id: userId }, token });
