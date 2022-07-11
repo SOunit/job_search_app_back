@@ -44,7 +44,6 @@ export const signup = async (req: Request, res: Response) => {
 export const login = async (req: Request, res: Response) => {
   try {
     // FIXME: add validation
-    // FIXME: encrypt password
     const { email, password } = req.body as { email: string; password: string };
 
     const loginUser = await getUserByEmailAndPassword(email, password);

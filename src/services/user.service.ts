@@ -1,5 +1,5 @@
 import DatabaseService from "./database.service";
-import bcrypt from "bcryptjs";
+import { match } from "./encrypt.service";
 
 export const getUserByEmailAndPassword = async (
   email: string,
@@ -7,7 +7,7 @@ export const getUserByEmailAndPassword = async (
 ) => {
   const user = await getUserByEmail(email);
   if (user) {
-    const doMatch = await bcrypt.compare(user.password, password);
+    const doMatch = await match(password, user.password);
     if (doMatch) {
       return user;
     }
