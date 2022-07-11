@@ -1,10 +1,10 @@
-import express, { NextFunction, Request, Response } from "express";
+import express from "express";
 import jobRoutes from "./routes/job-routes";
 import skillRoutes from "./routes/skill-routes";
 import cors from "cors";
 import DatabaseService from "./services/database.service";
 import authRoutes from "./routes/authRoutes";
-import { handleError } from "./controllers/errorController";
+import { defaultErrorHandler } from "./middleware/defaultErrorHandler";
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -16,7 +16,9 @@ app.use("/api/jobs", jobRoutes);
 app.use("/api/skills", skillRoutes);
 app.use("/api/auth", authRoutes);
 
-app.use(handleError);
+// The default error handler
+// http://expressjs.com/en/guide/error-handling.html#error-handling
+app.use(defaultErrorHandler);
 
 try {
   DatabaseService.getInstance()

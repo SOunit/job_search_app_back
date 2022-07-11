@@ -1,4 +1,5 @@
 import { NextFunction, Request, Response } from "express";
+import { CustomError } from "../middleware/defaultErrorHandler";
 import User from "../models/user";
 import DatabaseService from "../services/database.service";
 import { hash } from "../services/encrypt.service";
@@ -7,7 +8,6 @@ import {
   getUserByEmail,
   getUserByEmailAndPassword,
 } from "../services/user.service";
-import { CustomError } from "./errorController";
 
 export const signup = async (
   req: Request,

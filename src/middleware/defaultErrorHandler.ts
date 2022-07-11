@@ -1,8 +1,8 @@
-import { ErrorRequestHandler, NextFunction, Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 
 export type CustomError = TypeError & { statusCode: number };
 
-export const handleError = (
+export const defaultErrorHandler = (
   error: TypeError | CustomError,
   req: Request,
   res: Response,
