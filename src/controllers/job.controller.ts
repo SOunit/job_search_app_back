@@ -133,6 +133,11 @@ export const updateJob = async (
     const { jobId } = req.params;
     const userId = (req as any).userId;
 
+    const { error } = validateJob({ ...updatedJob, userId });
+    if (error) {
+      return next(error);
+    }
+
     const result =
       await DatabaseService.getInstance().collections.jobs?.updateOne(
         {
