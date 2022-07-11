@@ -110,7 +110,9 @@ export const createJob = async (
       await DatabaseService.getInstance().collections.jobs?.insertOne(newJob);
 
     if (!result) {
-      return res.status(500).json({ message: "Failed to create a new job." });
+      const error = new Error("Failed to create a new job.");
+      (error as CustomError).statusCode = 500;
+      return next(error);
     }
 
     res.status(201).json({
@@ -148,7 +150,9 @@ export const updateJob = async (
       );
 
     if (!result) {
-      return res.status(500).json({ message: "Failed to update job." });
+      const error = new Error("Failed to update job.");
+      (error as CustomError).statusCode = 500;
+      return next(error);
     }
 
     if (result?.matchedCount === 0) {
@@ -182,7 +186,9 @@ export const deleteJob = async (
     console.log(result);
 
     if (!result) {
-      return res.status(500).json({ message: "Failed to delete job." });
+      const error = new Error("Failed to delete job.");
+      (error as CustomError).statusCode = 500;
+      return next(error);
     }
 
     if (result?.deletedCount === 0) {

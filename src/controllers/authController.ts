@@ -40,7 +40,9 @@ export const signup = async (
     const result =
       await DatabaseService.getInstance().collections.users?.insertOne(newUser);
     if (!result) {
-      return res.status(500).json({ message: "Failed to signup" });
+      const error = new Error("Failed to signup");
+      (error as CustomError).statusCode = 500;
+      return next(error);
     }
 
     // generate token
