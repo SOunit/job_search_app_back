@@ -9,6 +9,6 @@ export const defaultErrorHandler = (
   next: NextFunction
 ) => {
   res
-    .status((error as CustomError).statusCode)
+    .status((error as CustomError).statusCode || 500)
     .json({ error: error.toString() });
 };

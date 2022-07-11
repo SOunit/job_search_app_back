@@ -3,6 +3,7 @@ import { ObjectId } from "mongodb";
 import { CustomError } from "../middleware/defaultErrorHandler";
 import Job, { CreateJobPostData } from "../models/job";
 import DatabaseService from "../services/database.service";
+import { validateJob } from "../validators/job.validator";
 
 export const getJobs = async (
   req: Request,
@@ -95,11 +96,15 @@ export const createJob = async (
   try {
     const userId = (req as any).userId as string;
     const createJobPostData = req.body as CreateJobPostData;
+
+    // validation
+    const { error } = validateJob({ ...createJobPostData, userId });
+    if (error) {
+      return next(error);
+    }
+
     const skills = createJobPostData.skills.map((skill) => new ObjectId(skill));
     const newJob = { ...createJobPostData, skills, userId } as Job;
-
-    // add validation
-    // check if all props exists
 
     const result =
       await DatabaseService.getInstance().collections.jobs?.insertOne(newJob);
@@ -127,6 +132,11 @@ export const updateJob = async (
     const updatedJob = req.body as Job;
     const { jobId } = req.params;
     const userId = (req as any).userId;
+
+    const { error } = validateJob({ ...updatedJob, userId });
+    if (error) {
+      return next(error);
+    }
 
     const result =
       await DatabaseService.getInstance().collections.jobs?.updateOne(
