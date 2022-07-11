@@ -8,7 +8,7 @@ import {
   getUserByEmail,
   getUserByEmailAndPassword,
 } from "../services/user.service";
-import { validateSignup } from "../validators/auth.validator";
+import { validateLogin, validateSignup } from "../validators/auth.validator";
 
 export const signup = async (
   req: Request,
@@ -54,18 +54,25 @@ export const signup = async (
   }
 };
 
+export type LoginData = { email: string; password: string };
+
 export const login = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
   try {
-    // FIXME: add validation
-    const { email, password } = req.body as { email: string; password: string };
+    const loginData = req.body as LoginData;
+    const { error } = validateLogin(loginData);
+    if (error) {
+      next(error);
+    }
+
+    const { email, password } = loginData;
 
     const loginUser = await getUserByEmailAndPassword(email, password);
     if (!loginUser) {
-      throw new Error("User not exists");
+      throw new Error("User not exists. Email or password may be wrong!");
     }
 
     // generate token
