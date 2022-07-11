@@ -1,8 +1,9 @@
 import Joi from "joi";
 import { LoginData } from "../controllers/authController";
+import Skill from "../models/skill";
 import User from "../models/user";
 
-type SchemaTypes = User | LoginData;
+type SchemaTypes = User | LoginData | Skill;
 
 export const validator =
   (schema: Joi.ObjectSchema<SchemaTypes>) => (payload: SchemaTypes) =>

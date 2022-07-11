@@ -1,5 +1,8 @@
 import { NextFunction, Request, Response } from "express";
 import { getTokenFromAuthHeader, verifyToken } from "../services/token.service";
+import { CustomError } from "./defaultErrorHandler";
+
+export type AuthorizedRequest = Request & { userId: string };
 
 export function authenticateToken(
   req: Request,
@@ -9,18 +12,22 @@ export function authenticateToken(
   // get token
   const token = getTokenFromAuthHeader(req);
   if (!token) {
-    return res.status(401).json({ message: "No token found" });
+    const error = new Error("No token found");
+    (error as CustomError).statusCode = 401;
+    return next(error);
   }
+
   const decodedToken = verifyToken(token);
   if (!decodedToken) {
-    return res.status(401).json({ message: "Token is invalid" });
+    const error = new Error("Token is invalid");
+    (error as CustomError).statusCode = 401;
+    return next(error);
   }
 
   // get userId from token
   const { userId } = decodedToken;
 
-  // FIXME: add type
-  (req as any).userId = userId;
+  (req as AuthorizedRequest).userId = userId;
 
   next();
 }

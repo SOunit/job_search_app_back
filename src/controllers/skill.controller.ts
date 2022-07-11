@@ -1,8 +1,10 @@
 import { NextFunction, Request, Response } from "express";
 import { ObjectId } from "mongodb";
+import { AuthorizedRequest } from "../middleware/authenticateToken";
 import { CustomError } from "../middleware/defaultErrorHandler";
 import Skill from "../models/skill";
 import DatabaseService from "../services/database.service";
+import { validateSkill } from "../validators/skill.validator";
 
 export const getSkills = async (
   req: Request,
@@ -47,23 +49,31 @@ export const createSkill = async (
 ) => {
   try {
     // get userId from token
-    // FIXME: add type
-    const userId = (req as any).userId;
+    const userId = (req as AuthorizedRequest).userId;
+
+    // validate
+    const newSkill = { ...(req.body as Skill), userId };
+    const { error } = validateSkill(newSkill);
+    if (error) {
+      next(error);
+    }
 
     // create new skill
-    const newSkill = { ...(req.body as Skill), userId };
     const result =
       await DatabaseService.getInstance().collections.skills?.insertOne(
         newSkill
       );
 
-    // create response
-    result
-      ? res.status(201).json({
-          ...newSkill,
-          _id: result.insertedId,
-        })
-      : res.status(500).json({ message: "Failed to create a new skill." });
+    if (!result) {
+      const error = new Error("Failed to create a new skill.");
+      (error as CustomError).statusCode = 500;
+      return next(error);
+    }
+
+    res.status(201).json({
+      ...newSkill,
+      _id: result.insertedId,
+    });
   } catch (error) {
     (error as CustomError).statusCode = 400;
     next(error);
@@ -80,8 +90,6 @@ export const updateSkill = async (
     const { skillId } = req.params;
     const userId = (req as any).userId;
 
-    console.log("userId", userId);
-
     const result =
       await DatabaseService.getInstance().collections.skills?.updateOne(
         {
@@ -92,13 +100,15 @@ export const updateSkill = async (
       );
 
     if (!result) {
-      return res.status(500).json({ message: "Failed to update skill." });
+      const error = new Error("Failed to update skill.");
+      (error as CustomError).statusCode = 500;
+      return next(error);
     }
 
     if (result?.matchedCount === 0) {
-      return res
-        .status(500)
-        .json({ message: "Failed to update skill. No match skill found!" });
+      const error = new Error("Failed to update skill. No match skill found!");
+      (error as CustomError).statusCode = 500;
+      return next(error);
     }
 
     res.json({ _id: skillId, ...updatedSkill });
