@@ -66,7 +66,7 @@ export const searchJobs = async (
     console.log("title", title, req.query);
 
     const pipeline = [
-      { $match: { title: new RegExp(`${title}`) } },
+      { $match: { title: new RegExp(`${title}`, "i") } },
       {
         $lookup: {
           from: "skills",
