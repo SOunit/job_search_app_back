@@ -11,24 +11,33 @@ export const getJobs = async (
   next: NextFunction
 ) => {
   try {
-    const jobs = (await DatabaseService.getInstance()
-      .collections.jobs?.aggregate([
-        {
-          $lookup: {
-            // join table name = skills collection
-            from: "skills",
-            // local field = jobs.skills
-            localField: "skills",
-            // foreignField = skills._id
-            foreignField: "_id",
-            // as is necessary for lookup, overwrite if same field name
-            as: "skills",
-          },
+    const { skip, limit } = req.query;
+
+    const pipeLine = [
+      {
+        $lookup: {
+          // join table name = skills collection
+          from: "skills",
+          // local field = jobs.skills
+          localField: "skills",
+          // foreignField = skills._id
+          foreignField: "_id",
+          // as is necessary for lookup, overwrite if same field name
+          as: "skills",
         },
-      ])
+      },
+    ];
+
+    const jobs = (await DatabaseService.getInstance()
+      .collections.jobs?.aggregate(pipeLine)
+      .skip(Number(skip))
+      .limit(Number(limit))
       .toArray()) as Job[];
 
-    res.json({ jobs });
+    const count =
+      await DatabaseService.getInstance().collections.jobs?.countDocuments();
+
+    res.json({ jobs, count });
   } catch (error) {
     (error as CustomError).statusCode = 500;
     next(error);
