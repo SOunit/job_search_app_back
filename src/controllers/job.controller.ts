@@ -70,12 +70,12 @@ export const searchJobs = async (
   next: NextFunction
 ) => {
   try {
-    const { title } = req.query;
-
-    console.log("title", title, req.query);
+    // FIXME: add type
+    const { title, skip, limit } = req.query;
+    const regExp = new RegExp(`${title}`, "i");
 
     const pipeline = [
-      { $match: { title: new RegExp(`${title}`, "i") } },
+      { $match: { title: regExp } },
       {
         $lookup: {
           from: "skills",
@@ -86,11 +86,17 @@ export const searchJobs = async (
       },
     ];
 
-    const jobs = (await DatabaseService.getInstance()
-      .collections.jobs?.aggregate(pipeline)
+    const jobsCollection = DatabaseService.getInstance().collections.jobs;
+
+    const searchedJobs = (await jobsCollection
+      ?.aggregate(pipeline)
+      .skip(Number(skip))
+      .limit(Number(limit))
       .toArray()) as Job[];
 
-    res.json({ jobs });
+    const count = await jobsCollection?.countDocuments({ title: regExp });
+
+    res.json({ searchedJobs, count });
   } catch (error) {
     (error as CustomError).statusCode = 500;
     next(error);
