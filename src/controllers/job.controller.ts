@@ -3,6 +3,7 @@ import { ObjectId } from "mongodb";
 import { CustomError } from "../middleware/defaultErrorHandler";
 import Job, { CreateJobPostData } from "../models/job";
 import DatabaseService from "../services/database.service";
+import { jobService } from "../services/job.service";
 import { validateJob } from "../validators/job.validator";
 
 export const getJobs = async (
@@ -51,25 +52,9 @@ export const getJobById = async (
 ) => {
   try {
     const jobId = req.params.jobId;
-    const query = { _id: new ObjectId(jobId) };
+    const job = await jobService.getJobById(jobId);
 
-    const pipeLine = [
-      { $match: query },
-      {
-        $lookup: {
-          from: "skills",
-          localField: "skills",
-          foreignField: "_id",
-          as: "skills",
-        },
-      },
-    ];
-
-    const jobList = (await DatabaseService.getInstance()
-      .collections.jobs?.aggregate(pipeLine)
-      .toArray()) as Job[];
-
-    res.json({ job: jobList[0] });
+    res.json({ job });
   } catch (error) {
     (error as CustomError).statusCode = 404;
     next(error);
