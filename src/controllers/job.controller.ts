@@ -1,8 +1,9 @@
 import { NextFunction, Request, Response } from "express";
 import { ObjectId } from "mongodb";
 import { CustomError } from "../middleware/defaultErrorHandler";
-import Job, { CreateJobPostData } from "../models/job";
+import Job, { JobPostData } from "../models/job";
 import DatabaseService from "../services/database.service";
+import { jobService } from "../services/job.service";
 import { validateJob } from "../validators/job.validator";
 
 export const getJobs = async (
@@ -51,25 +52,9 @@ export const getJobById = async (
 ) => {
   try {
     const jobId = req.params.jobId;
-    const query = { _id: new ObjectId(jobId) };
+    const job = await jobService.getJobById(jobId);
 
-    const pipeLine = [
-      { $match: query },
-      {
-        $lookup: {
-          from: "skills",
-          localField: "skills",
-          foreignField: "_id",
-          as: "skills",
-        },
-      },
-    ];
-
-    const jobList = (await DatabaseService.getInstance()
-      .collections.jobs?.aggregate(pipeLine)
-      .toArray()) as Job[];
-
-    res.json({ job: jobList[0] });
+    res.json({ job });
   } catch (error) {
     (error as CustomError).statusCode = 404;
     next(error);
@@ -122,7 +107,7 @@ export const createJob = async (
 ) => {
   try {
     const userId = (req as any).userId as string;
-    const createJobPostData = req.body as CreateJobPostData;
+    const createJobPostData = req.body as JobPostData;
 
     // validation
     const { error } = validateJob({ ...createJobPostData, userId });
@@ -130,8 +115,7 @@ export const createJob = async (
       return next(error);
     }
 
-    const skills = createJobPostData.skills.map((skill) => new ObjectId(skill));
-    const newJob = { ...createJobPostData, skills, userId } as Job;
+    const newJob = jobService.convertJobToInsert(createJobPostData, userId);
 
     const result =
       await DatabaseService.getInstance().collections.jobs?.insertOne(newJob);
@@ -142,9 +126,12 @@ export const createJob = async (
       return next(error);
     }
 
+    const jobId = result.insertedId.toString();
+    const insertedJob = await jobService.getJobById(jobId);
+
     res.status(201).json({
-      _id: result.insertedId,
-      ...newJob,
+      _id: jobId,
+      ...insertedJob,
     });
   } catch (error) {
     (error as CustomError).statusCode = 400;
@@ -158,14 +145,16 @@ export const updateJob = async (
   next: NextFunction
 ) => {
   try {
-    const updatedJob = req.body as Job;
+    const updateJobPostData = req.body as JobPostData;
     const { jobId } = req.params;
     const userId = (req as any).userId;
 
-    const { error } = validateJob({ ...updatedJob, userId });
+    const { error } = validateJob({ ...updateJobPostData, userId });
     if (error) {
       return next(error);
     }
+
+    const updatedJob = jobService.convertJobToInsert(updateJobPostData, userId);
 
     const result =
       await DatabaseService.getInstance().collections.jobs?.updateOne(
@@ -183,12 +172,14 @@ export const updateJob = async (
     }
 
     if (result?.matchedCount === 0) {
-      return res
-        .status(500)
-        .json({ message: "Failed to update job. No match job found!" });
+      const error = new Error("Failed to update job. No match job found!");
+      (error as CustomError).statusCode = 500;
+      return next(error);
     }
 
-    res.json({ _id: jobId, ...updatedJob });
+    const job = await jobService.getJobById(jobId);
+
+    res.json({ _id: jobId, ...job });
   } catch (error) {
     (error as CustomError).statusCode = 400;
     next(error);

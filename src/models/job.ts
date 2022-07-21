@@ -14,7 +14,7 @@ export default class Job {
   ) {}
 }
 
-export type CreateJobPostData = {
+export type JobPostData = {
   title: string;
   companyName: string;
   city: string;
