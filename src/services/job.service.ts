@@ -1,8 +1,6 @@
 import { ObjectId } from "mongodb";
-import Job from "../models/job";
+import Job, { JobPostData } from "../models/job";
 import DatabaseService from "./database.service";
-
-const updateJob = () => {};
 
 const getJobById = async (jobId: string) => {
   const query = { _id: new ObjectId(jobId) };
@@ -26,7 +24,20 @@ const getJobById = async (jobId: string) => {
   return jobList[0];
 };
 
+const wrapSkillsWithObjectId = (job: JobPostData) => {
+  const skills = job.skills.map((skill) => new ObjectId(skill));
+  const newJob = { ...job, skills } as Job;
+  return newJob;
+};
+
+const convertJobToInsert = (job: JobPostData, userId: string) => {
+  const newJob = wrapSkillsWithObjectId(job);
+  console.log("convertJobToInsert", newJob);
+
+  return { ...newJob, userId };
+};
+
 export const jobService = {
   getJobById,
-  updateJob,
+  convertJobToInsert,
 };

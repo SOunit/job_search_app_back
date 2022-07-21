@@ -2,7 +2,7 @@ GET http://localhost:5000/api/jobs?skip=6&limit=3
 
 ###
 
-GET http://localhost:5000/api/jobs/62d88ef33721c4e5359fd1c2
+GET http://localhost:5000/api/jobs/62d9857c43e989f0419a3168
 
 ###
 
@@ -12,7 +12,7 @@ GET http://localhost:5000/api/jobs/search?title=&skip=0&limit=5
 
 POST http://localhost:5000/api/jobs
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MmNjODVlN2M0YWMxNTEwNDdhOGQzM2YiLCJpYXQiOjE2NTgzNTk1MTMsImV4cCI6MTY1ODM2MzExM30.cxvIm61DX-iIzlNToJuHWKLSgAYkKUgbGV-EtSC3h4M
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MmNjODVlN2M0YWMxNTEwNDdhOGQzM2YiLCJpYXQiOjE2NTg0MjI2MzEsImV4cCI6MTY1ODQyNjIzMX0.XB4o3e_61_Wv8q6OFa7eQGhTeOPaQwpDmqOFIpCyuwY
 
 { 
     "title": "title to update"
@@ -25,9 +25,9 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MmNjO
 
 ###
 
-PATCH http://localhost:5000/api/jobs/62d88ef33721c4e5359fd1c2
+PATCH http://localhost:5000/api/jobs/62d9857c43e989f0419a3168
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MmNjODVlN2M0YWMxNTEwNDdhOGQzM2YiLCJpYXQiOjE2NTgzNTk1MTMsImV4cCI6MTY1ODM2MzExM30.cxvIm61DX-iIzlNToJuHWKLSgAYkKUgbGV-EtSC3h4M
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MmNjODVlN2M0YWMxNTEwNDdhOGQzM2YiLCJpYXQiOjE2NTg0MjI2MzEsImV4cCI6MTY1ODQyNjIzMX0.XB4o3e_61_Wv8q6OFa7eQGhTeOPaQwpDmqOFIpCyuwY
 
 { 
     "title": "title update"
