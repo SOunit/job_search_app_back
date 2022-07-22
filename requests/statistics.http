@@ -1,0 +1,41 @@
+GET http://localhost:5000/statistics/2
+
+###
+
+POST http://localhost:5000/statistics
+Content-Type: application/json
+
+{
+    "1": {
+        "_id": "1",
+        "name": "1"
+    },
+    "2": {
+        "_id": "2",
+        "name": "2"
+    },
+    "3": {
+        "_id": "3",
+        "name": "3"
+    }
+}
+
+###
+
+POST http://localhost:5000/statistics/delete
+Content-Type: application/json
+
+{
+    "627ac1deaa744dd1d1bd947c": {
+        "_id": "627ac1deaa744dd1d1bd947c",
+        "name": "Vue"
+    },
+    "6279a5e957094195e626ac20": {
+        "_id": "6279a5e957094195e626ac20",
+        "name": "React"
+    },
+    "6279a5ed57094195e626ac21": {
+        "_id": "6279a5ed57094195e626ac21",
+        "name": "Node"
+    }
+}
