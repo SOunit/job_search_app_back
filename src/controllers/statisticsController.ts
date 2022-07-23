@@ -4,8 +4,9 @@ import { CustomError } from "../middleware/defaultErrorHandler";
 import Skill from "../models/skill";
 import Statistics from "../models/statistics";
 import DatabaseService from "../services/database.service";
+import { convertSkillsMapToSkillIdList } from "../utils/utils";
 
-type SkillsMap = {
+export type SkillsMap = {
   [key: string]: Skill;
 };
 
@@ -69,7 +70,7 @@ const addSkillsToStatistics = (
   next: NextFunction
 ) => {
   try {
-    const skillsMapToAdd = req.body;
+    const skillsMapToAdd: SkillsMap = req.body;
 
     Object.keys(skillsMapToAdd).forEach(async (primarySkillId) => {
       const statisticsWithPrimaryKey = await _createStaticsWithPrimaryKey(
@@ -77,15 +78,11 @@ const addSkillsToStatistics = (
         skillsMapToAdd
       );
 
-      console.log("statisticsWithPrimaryKey", statisticsWithPrimaryKey);
-
       const subSkillUpdatedStatistics = _addSubSkills(
         skillsMapToAdd,
         primarySkillId,
         statisticsWithPrimaryKey
       );
-
-      console.log("subSkillUpdatedStatistics", subSkillUpdatedStatistics);
 
       if (subSkillUpdatedStatistics._id) {
         await DatabaseService.getInstance().collections.statistics?.updateOne(
@@ -99,7 +96,9 @@ const addSkillsToStatistics = (
       }
     });
 
-    res.json({ message: "statistics updated!" });
+    const skillIdList = convertSkillsMapToSkillIdList(skillsMapToAdd);
+
+    res.json({ skillIdList });
   } catch (error) {
     (error as CustomError).statusCode = 500;
     next(error);
