@@ -5,6 +5,6 @@ const statisticsRoutes = express.Router();
 
 statisticsRoutes.post("/", statisticsController.addSkillsToStatistics);
 statisticsRoutes.get("/:skillId", statisticsController.getStatisticBySkillId);
-statisticsRoutes.delete("/", statisticsController.removeSkills);
+statisticsRoutes.post("/delete", statisticsController.removeSkills);
 
 export default statisticsRoutes;
