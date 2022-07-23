@@ -13,20 +13,26 @@ const _createStaticsWithPrimaryKey = async (
   primarySkillId: string,
   skillsMapToAdd: SkillsMap
 ) => {
-  // create primary key
-  let statistics =
-    (await DatabaseService.getInstance().collections.statistics?.findOne({
-      "primarySkill._id": new ObjectId(primarySkillId),
-    })) as Statistics;
+  try {
+    // create primary key
+    let statistics =
+      (await DatabaseService.getInstance().collections.statistics?.findOne({
+        "primarySkill._id": new ObjectId(primarySkillId),
+      })) as Statistics;
 
-  if (!statistics) {
-    statistics = {
-      primarySkill: skillsMapToAdd[primarySkillId],
-      subSkillsMap: {},
-    };
+    const primarySkill = skillsMapToAdd[primarySkillId];
+
+    if (!statistics) {
+      statistics = {
+        primarySkill: { ...primarySkill, _id: new ObjectId(primarySkill._id) },
+        subSkillsMap: {},
+      };
+    }
+
+    return statistics;
+  } catch (error) {
+    throw error;
   }
-
-  return statistics;
 };
 
 const _addSubSkills = (
@@ -34,23 +40,27 @@ const _addSubSkills = (
   primarySkillId: string,
   statistics: Statistics
 ) => {
-  // create sub skills
-  Object.keys(skillsMapToAdd).forEach((subSkillId) => {
-    if (subSkillId === primarySkillId) {
-      return;
-    }
+  try {
+    // create sub skills
+    Object.keys(skillsMapToAdd).forEach((subSkillId) => {
+      if (subSkillId === primarySkillId) {
+        return;
+      }
 
-    if (statistics.subSkillsMap[subSkillId]) {
-      statistics.subSkillsMap[subSkillId].count++;
-    } else {
-      statistics.subSkillsMap[subSkillId] = {
-        count: 1,
-        skill: skillsMapToAdd[subSkillId],
-      };
-    }
-  });
+      if (statistics.subSkillsMap[subSkillId]) {
+        statistics.subSkillsMap[subSkillId].count++;
+      } else {
+        statistics.subSkillsMap[subSkillId] = {
+          count: 1,
+          skill: skillsMapToAdd[subSkillId],
+        };
+      }
+    });
 
-  return statistics;
+    return statistics;
+  } catch (error) {
+    throw error;
+  }
 };
 
 const addSkillsToStatistics = (
@@ -67,15 +77,19 @@ const addSkillsToStatistics = (
         skillsMapToAdd
       );
 
+      console.log("statisticsWithPrimaryKey", statisticsWithPrimaryKey);
+
       const subSkillUpdatedStatistics = _addSubSkills(
         skillsMapToAdd,
         primarySkillId,
         statisticsWithPrimaryKey
       );
 
+      console.log("subSkillUpdatedStatistics", subSkillUpdatedStatistics);
+
       if (subSkillUpdatedStatistics._id) {
         await DatabaseService.getInstance().collections.statistics?.updateOne(
-          { _id: subSkillUpdatedStatistics._id },
+          { _id: new ObjectId(subSkillUpdatedStatistics._id) },
           { $set: subSkillUpdatedStatistics }
         );
       } else {
@@ -97,18 +111,22 @@ const _removeSubSkills = (
   primarySkillId: string,
   statistics: Statistics
 ) => {
-  Object.keys(skillsMapToRemove).forEach((subSkillId) => {
-    if (subSkillId === primarySkillId) {
-      return;
-    }
+  try {
+    Object.keys(skillsMapToRemove).forEach((subSkillId) => {
+      if (subSkillId === primarySkillId) {
+        return;
+      }
 
-    statistics.subSkillsMap[subSkillId].count--;
-    if (statistics.subSkillsMap[subSkillId].count < 0) {
-      statistics.subSkillsMap[subSkillId].count = 0;
-    }
-  });
+      statistics.subSkillsMap[subSkillId].count--;
+      if (statistics.subSkillsMap[subSkillId].count < 0) {
+        statistics.subSkillsMap[subSkillId].count = 0;
+      }
+    });
 
-  return statistics;
+    return statistics;
+  } catch (error) {
+    throw error;
+  }
 };
 
 const getStatisticBySkillId = async (

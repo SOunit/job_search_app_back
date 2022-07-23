@@ -1,41 +1,41 @@
-GET http://localhost:5000/statistics/2
+GET http://localhost:5000/api/statistics/62c9f29178a9ce77381dd569
 
 ###
 
-POST http://localhost:5000/statistics
+POST http://localhost:5000/api/statistics
 Content-Type: application/json
 
 {
-    "1": {
-        "_id": "1",
-        "name": "1"
+    "62c9f29178a9ce77381dd569": {
+        "_id": "62c9f29178a9ce77381dd569",
+        "name": "test 1"
     },
-    "2": {
-        "_id": "2",
-        "name": "2"
+    "62ca1efda520675e265e759b": {
+        "_id": "62ca1efda520675e265e759b",
+        "name": "test 2"
     },
-    "3": {
-        "_id": "3",
-        "name": "3"
+    "62cc8b519d199f31fb378985": {
+        "_id": "62cc8b519d199f31fb378985",
+        "name": "test 3"
     }
 }
 
 ###
 
-POST http://localhost:5000/statistics/delete
+POST http://localhost:5000/api/statistics/delete
 Content-Type: application/json
 
 {
-    "627ac1deaa744dd1d1bd947c": {
-        "_id": "627ac1deaa744dd1d1bd947c",
-        "name": "Vue"
+    "62c9f29178a9ce77381dd569": {
+        "_id": "62c9f29178a9ce77381dd569",
+        "name": "test 1"
     },
-    "6279a5e957094195e626ac20": {
-        "_id": "6279a5e957094195e626ac20",
-        "name": "React"
+    "62ca1efda520675e265e759b": {
+        "_id": "62ca1efda520675e265e759b",
+        "name": "test 2"
     },
-    "6279a5ed57094195e626ac21": {
-        "_id": "6279a5ed57094195e626ac21",
-        "name": "Node"
+    "62cc8b519d199f31fb378985": {
+        "_id": "62cc8b519d199f31fb378985",
+        "name": "test 3"
     }
 }
