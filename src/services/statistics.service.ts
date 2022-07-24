@@ -26,24 +26,115 @@ const _removeSubSkills = (
   }
 };
 
-const removeSkillsFromStatistics = (skillsMapToRemove: SkillsMap) => {
-  Object.keys(skillsMapToRemove).forEach(async (primarySkillId) => {
+const _createStaticsWithPrimaryKey = async (
+  primarySkillId: string,
+  skillsMapToAdd: SkillsMap
+) => {
+  try {
+    // create primary key
     let statistics =
       (await DatabaseService.getInstance().collections.statistics?.findOne({
         "primarySkill._id": new ObjectId(primarySkillId),
       })) as Statistics;
 
-    const subSKillsUpdatedStatistics = _removeSubSkills(
-      skillsMapToRemove,
-      primarySkillId,
-      statistics
-    );
+    const primarySkill = skillsMapToAdd[primarySkillId];
 
-    await DatabaseService.getInstance().collections.statistics?.updateOne(
-      { "primarySkill._id": new ObjectId(primarySkillId) },
-      { $set: subSKillsUpdatedStatistics }
-    );
-  });
+    if (!statistics) {
+      statistics = {
+        primarySkill: { ...primarySkill, _id: new ObjectId(primarySkill._id) },
+        subSkillsMap: {},
+      };
+    }
+
+    return statistics;
+  } catch (error) {
+    throw error;
+  }
 };
 
-export const staticsService = { removeSkillsFromStatistics };
+const _addSubSkills = (
+  skillsMapToAdd: SkillsMap,
+  primarySkillId: string,
+  statistics: Statistics
+) => {
+  try {
+    // create sub skills
+    Object.keys(skillsMapToAdd).forEach((subSkillId) => {
+      if (subSkillId === primarySkillId) {
+        return;
+      }
+
+      if (statistics.subSkillsMap[subSkillId]) {
+        statistics.subSkillsMap[subSkillId].count++;
+      } else {
+        statistics.subSkillsMap[subSkillId] = {
+          count: 1,
+          skill: skillsMapToAdd[subSkillId],
+        };
+      }
+    });
+
+    return statistics;
+  } catch (error) {
+    throw error;
+  }
+};
+
+const removeSkillsFromStatistics = (skillsMapToRemove: SkillsMap) => {
+  try {
+    Object.keys(skillsMapToRemove).forEach(async (primarySkillId) => {
+      let statistics =
+        (await DatabaseService.getInstance().collections.statistics?.findOne({
+          "primarySkill._id": new ObjectId(primarySkillId),
+        })) as Statistics;
+
+      const subSKillsUpdatedStatistics = _removeSubSkills(
+        skillsMapToRemove,
+        primarySkillId,
+        statistics
+      );
+
+      await DatabaseService.getInstance().collections.statistics?.updateOne(
+        { "primarySkill._id": new ObjectId(primarySkillId) },
+        { $set: subSKillsUpdatedStatistics }
+      );
+    });
+  } catch (error) {
+    throw error;
+  }
+};
+
+const addSkillsToStatistics = (skillsMapToAdd: SkillsMap) => {
+  try {
+    Object.keys(skillsMapToAdd).forEach(async (primarySkillId) => {
+      const statisticsWithPrimaryKey = await _createStaticsWithPrimaryKey(
+        primarySkillId,
+        skillsMapToAdd
+      );
+
+      const subSkillUpdatedStatistics = _addSubSkills(
+        skillsMapToAdd,
+        primarySkillId,
+        statisticsWithPrimaryKey
+      );
+
+      if (subSkillUpdatedStatistics._id) {
+        await DatabaseService.getInstance().collections.statistics?.updateOne(
+          { _id: new ObjectId(subSkillUpdatedStatistics._id) },
+          { $set: subSkillUpdatedStatistics }
+        );
+      } else {
+        await DatabaseService.getInstance().collections.statistics?.insertOne(
+          subSkillUpdatedStatistics
+        );
+      }
+    });
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const staticsService = {
+  removeSkillsFromStatistics,
+  addSkillsToStatistics,
+};

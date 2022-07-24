@@ -6,67 +6,16 @@ import Statistics from "../models/statistics";
 import DatabaseService from "../services/database.service";
 import { jobService } from "../services/job.service";
 import { staticsService } from "../services/statistics.service";
-import { convertSkillsMapToSkillIdList } from "../utils/utils";
+import {
+  convertSkillListToMap,
+  convertSkillsMapToSkillIdList,
+} from "../utils/utils";
 
 export type SkillsMap = {
   [key: string]: Skill;
 };
 
-const _createStaticsWithPrimaryKey = async (
-  primarySkillId: string,
-  skillsMapToAdd: SkillsMap
-) => {
-  try {
-    // create primary key
-    let statistics =
-      (await DatabaseService.getInstance().collections.statistics?.findOne({
-        "primarySkill._id": new ObjectId(primarySkillId),
-      })) as Statistics;
-
-    const primarySkill = skillsMapToAdd[primarySkillId];
-
-    if (!statistics) {
-      statistics = {
-        primarySkill: { ...primarySkill, _id: new ObjectId(primarySkill._id) },
-        subSkillsMap: {},
-      };
-    }
-
-    return statistics;
-  } catch (error) {
-    throw error;
-  }
-};
-
-const _addSubSkills = (
-  skillsMapToAdd: SkillsMap,
-  primarySkillId: string,
-  statistics: Statistics
-) => {
-  try {
-    // create sub skills
-    Object.keys(skillsMapToAdd).forEach((subSkillId) => {
-      if (subSkillId === primarySkillId) {
-        return;
-      }
-
-      if (statistics.subSkillsMap[subSkillId]) {
-        statistics.subSkillsMap[subSkillId].count++;
-      } else {
-        statistics.subSkillsMap[subSkillId] = {
-          count: 1,
-          skill: skillsMapToAdd[subSkillId],
-        };
-      }
-    });
-
-    return statistics;
-  } catch (error) {
-    throw error;
-  }
-};
-
-const addSkillsToStatistics = (
+const addSkillsToStatistics = async (
   req: Request,
   res: Response,
   next: NextFunction
@@ -74,29 +23,7 @@ const addSkillsToStatistics = (
   try {
     const skillsMapToAdd: SkillsMap = req.body;
 
-    Object.keys(skillsMapToAdd).forEach(async (primarySkillId) => {
-      const statisticsWithPrimaryKey = await _createStaticsWithPrimaryKey(
-        primarySkillId,
-        skillsMapToAdd
-      );
-
-      const subSkillUpdatedStatistics = _addSubSkills(
-        skillsMapToAdd,
-        primarySkillId,
-        statisticsWithPrimaryKey
-      );
-
-      if (subSkillUpdatedStatistics._id) {
-        await DatabaseService.getInstance().collections.statistics?.updateOne(
-          { _id: new ObjectId(subSkillUpdatedStatistics._id) },
-          { $set: subSkillUpdatedStatistics }
-        );
-      } else {
-        await DatabaseService.getInstance().collections.statistics?.insertOne(
-          subSkillUpdatedStatistics
-        );
-      }
-    });
+    staticsService.addSkillsToStatistics(skillsMapToAdd);
 
     const skillIdList = convertSkillsMapToSkillIdList(skillsMapToAdd);
 
@@ -154,6 +81,10 @@ const updateSkills = async (
 
     const job = await jobService.getJobById(jobId);
     const skills = job.skills;
+
+    const skillsMapToRemove = convertSkillListToMap(skills as Skill[]);
+
+    await staticsService.removeSkillsFromStatistics(skillsMapToRemove);
 
     res.json(skills);
   } catch (error) {
