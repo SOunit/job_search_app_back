@@ -4,6 +4,8 @@ import { CustomError } from "../middleware/defaultErrorHandler";
 import Skill from "../models/skill";
 import Statistics from "../models/statistics";
 import DatabaseService from "../services/database.service";
+import { jobService } from "../services/job.service";
+import { staticsService } from "../services/statistics.service";
 import { convertSkillsMapToSkillIdList } from "../utils/utils";
 
 export type SkillsMap = {
@@ -105,29 +107,6 @@ const addSkillsToStatistics = (
   }
 };
 
-const _removeSubSkills = (
-  skillsMapToRemove: SkillsMap,
-  primarySkillId: string,
-  statistics: Statistics
-) => {
-  try {
-    Object.keys(skillsMapToRemove).forEach((subSkillId) => {
-      if (subSkillId === primarySkillId) {
-        return;
-      }
-
-      statistics.subSkillsMap[subSkillId].count--;
-      if (statistics.subSkillsMap[subSkillId].count < 0) {
-        statistics.subSkillsMap[subSkillId].count = 0;
-      }
-    });
-
-    return statistics;
-  } catch (error) {
-    throw error;
-  }
-};
-
 const getStatisticBySkillId = async (
   req: Request,
   res: Response,
@@ -148,27 +127,15 @@ const getStatisticBySkillId = async (
   }
 };
 
-const removeSkills = (req: Request, res: Response, next: NextFunction) => {
+const removeSkills = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
-    const skillsMapToRemove = req.body;
+    const skillsMapToRemove: SkillsMap = req.body;
 
-    Object.keys(skillsMapToRemove).forEach(async (primarySkillId) => {
-      let statistics =
-        (await DatabaseService.getInstance().collections.statistics?.findOne({
-          "primarySkill._id": new ObjectId(primarySkillId),
-        })) as Statistics;
-
-      const subSKillsUpdatedStatistics = _removeSubSkills(
-        skillsMapToRemove,
-        primarySkillId,
-        statistics
-      );
-
-      DatabaseService.getInstance().collections.statistics?.updateOne(
-        { "primarySkill._id": new ObjectId(primarySkillId) },
-        { $set: subSKillsUpdatedStatistics }
-      );
-    });
+    await staticsService.removeSkillsFromStatistics(skillsMapToRemove);
 
     res.json({ message: "skills removed" });
   } catch (error) {
@@ -177,4 +144,27 @@ const removeSkills = (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
-export default { addSkillsToStatistics, getStatisticBySkillId, removeSkills };
+const updateSkills = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { jobId } = req.params;
+
+    const job = await jobService.getJobById(jobId);
+    const skills = job.skills;
+
+    res.json(skills);
+  } catch (error) {
+    (error as CustomError).statusCode = 500;
+    next(error);
+  }
+};
+
+export default {
+  addSkillsToStatistics,
+  getStatisticBySkillId,
+  removeSkills,
+  updateSkills,
+};
