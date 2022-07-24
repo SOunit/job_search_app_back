@@ -39,3 +39,23 @@ Content-Type: application/json
         "name": "test 3"
     }
 }
+
+###
+
+PUT http://localhost:5000/api/statistics/62ca0e8e5b4e193869220764
+Content-Type: application/json
+
+{
+    "62c9f29178a9ce77381dd569": {
+        "_id": "62c9f29178a9ce77381dd569",
+        "name": "test 1"
+    },
+    "62ca1efda520675e265e759b": {
+        "_id": "62ca1efda520675e265e759b",
+        "name": "test 2"
+    },
+    "62cc8b519d199f31fb378985": {
+        "_id": "62cc8b519d199f31fb378985",
+        "name": "test 3"
+    }
+}
