@@ -62,7 +62,7 @@ const removeSkills = async (
   try {
     const skillsMapToRemove: SkillsMap = req.body;
 
-    await staticsService.removeSkillsFromStatistics(skillsMapToRemove);
+    staticsService.removeSkillsFromStatistics(skillsMapToRemove);
 
     res.json({ message: "skills removed" });
   } catch (error) {
@@ -78,13 +78,15 @@ const updateSkills = async (
 ) => {
   try {
     const { jobId } = req.params;
+    const skillsMapToAdd: SkillsMap = req.body;
 
     const job = await jobService.getJobById(jobId);
     const skills = job.skills;
 
     const skillsMapToRemove = convertSkillListToMap(skills as Skill[]);
 
-    await staticsService.removeSkillsFromStatistics(skillsMapToRemove);
+    staticsService.removeSkillsFromStatistics(skillsMapToRemove);
+    staticsService.addSkillsToStatistics(skillsMapToAdd);
 
     res.json(skills);
   } catch (error) {
