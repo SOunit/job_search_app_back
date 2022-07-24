@@ -107,6 +107,10 @@ const removeSkillsFromStatistics = (skillsMapToRemove: SkillsMap) => {
 const addSkillsToStatistics = (skillsMapToAdd: SkillsMap) => {
   try {
     Object.keys(skillsMapToAdd).forEach(async (primarySkillId) => {
+      if (!skillsMapToAdd[primarySkillId]) {
+        return;
+      }
+
       const statisticsWithPrimaryKey = await _createStaticsWithPrimaryKey(
         primarySkillId,
         skillsMapToAdd
