@@ -3,7 +3,7 @@ import { SkillsMap } from "../controllers/statisticsController";
 import Statistics from "../models/statistics";
 import DatabaseService from "./database.service";
 
-const _removeSubSkills = (
+const _decrementSubSkillsCount = (
   skillsMapToRemove: SkillsMap,
   primarySkillId: string,
   statistics: Statistics
@@ -26,7 +26,7 @@ const _removeSubSkills = (
   }
 };
 
-const _createStaticsWithPrimaryKey = async (
+const _getStatics = async (
   primarySkillId: string,
   skillsMapToAdd: SkillsMap
 ) => {
@@ -88,7 +88,7 @@ const removeSkillsFromStatistics = (skillsMapToRemove: SkillsMap) => {
           "primarySkill._id": new ObjectId(primarySkillId),
         })) as Statistics;
 
-      const subSKillsUpdatedStatistics = _removeSubSkills(
+      const updatedStatistics = _decrementSubSkillsCount(
         skillsMapToRemove,
         primarySkillId,
         statistics
@@ -96,7 +96,7 @@ const removeSkillsFromStatistics = (skillsMapToRemove: SkillsMap) => {
 
       await DatabaseService.getInstance().collections.statistics?.updateOne(
         { "primarySkill._id": new ObjectId(primarySkillId) },
-        { $set: subSKillsUpdatedStatistics }
+        { $set: updatedStatistics }
       );
     });
   } catch (error) {
@@ -107,29 +107,27 @@ const removeSkillsFromStatistics = (skillsMapToRemove: SkillsMap) => {
 const addSkillsToStatistics = (skillsMapToAdd: SkillsMap) => {
   try {
     Object.keys(skillsMapToAdd).forEach(async (primarySkillId) => {
+      // if data is null, nothing to add
       if (!skillsMapToAdd[primarySkillId]) {
         return;
       }
 
-      const statisticsWithPrimaryKey = await _createStaticsWithPrimaryKey(
-        primarySkillId,
-        skillsMapToAdd
-      );
+      const statistics = await _getStatics(primarySkillId, skillsMapToAdd);
 
-      const subSkillUpdatedStatistics = _addSubSkills(
+      const updatedStatistics = _addSubSkills(
         skillsMapToAdd,
         primarySkillId,
-        statisticsWithPrimaryKey
+        statistics
       );
 
-      if (subSkillUpdatedStatistics._id) {
+      if (updatedStatistics._id) {
         await DatabaseService.getInstance().collections.statistics?.updateOne(
-          { _id: new ObjectId(subSkillUpdatedStatistics._id) },
-          { $set: subSkillUpdatedStatistics }
+          { _id: new ObjectId(updatedStatistics._id) },
+          { $set: updatedStatistics }
         );
       } else {
         await DatabaseService.getInstance().collections.statistics?.insertOne(
-          subSkillUpdatedStatistics
+          updatedStatistics
         );
       }
     });

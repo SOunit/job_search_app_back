@@ -32,8 +32,6 @@ const wrapSkillsWithObjectId = (job: JobPostData) => {
 
 const convertJobToInsert = (job: JobPostData, userId: string) => {
   const newJob = wrapSkillsWithObjectId(job);
-  console.log("convertJobToInsert", newJob);
-
   return { ...newJob, userId };
 };
 
