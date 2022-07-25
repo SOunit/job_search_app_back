@@ -4,6 +4,7 @@ GET http://localhost:5000/api/statistics/62c9f29178a9ce77381dd569
 
 POST http://localhost:5000/api/statistics
 Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MmRkZTMxZWU5NTExYjhlNGE0NDM4MjciLCJpYXQiOjE2NTg3Nzk4ODcsImV4cCI6MTY1ODc4MzQ4N30._OiQqRhwfeUJRYtWpUkGkzOHJC2qlmeBE-EiEPFaxOE
 
 {
     "62c9f29178a9ce77381dd569": {
@@ -24,6 +25,7 @@ Content-Type: application/json
 
 POST http://localhost:5000/api/statistics/delete
 Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MmRkZTMxZWU5NTExYjhlNGE0NDM4MjciLCJpYXQiOjE2NTg3Nzk4ODcsImV4cCI6MTY1ODc4MzQ4N30._OiQqRhwfeUJRYtWpUkGkzOHJC2qlmeBE-EiEPFaxOE
 
 {
     "62c9f29178a9ce77381dd569": {
@@ -42,8 +44,9 @@ Content-Type: application/json
 
 ###
 
-PUT http://localhost:5000/api/statistics/62ca0e8e5b4e193869220764
+PUT http://localhost:5000/api/statistics/62defa6ffd335583a801ad06
 Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MmRkZTMxZWU5NTExYjhlNGE0NDM4MjciLCJpYXQiOjE2NTg3Nzk4ODcsImV4cCI6MTY1ODc4MzQ4N30._OiQqRhwfeUJRYtWpUkGkzOHJC2qlmeBE-EiEPFaxOE
 
 {
     "62c9f29178a9ce77381dd569": {
