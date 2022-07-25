@@ -92,7 +92,7 @@ const updateSkills = async (
     const skillIdListToRemove =
       convertSkillsMapToSkillIdList(skillsMapToRemove);
 
-    res.json([...skillIdListToAdd, ...skillIdListToRemove]);
+    res.json({ skillIdList: [...skillIdListToAdd, ...skillIdListToRemove] });
   } catch (error) {
     (error as CustomError).statusCode = 500;
     next(error);
