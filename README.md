@@ -8,3 +8,6 @@
 ```
 http://localhost:5000/api/jobs
 ```
+
+# Frontend repo
+https://github.com/sounit-organization/job_search_app_front
