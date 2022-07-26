@@ -1,32 +1,34 @@
 import { ObjectId } from "mongodb";
 import { SkillsMap } from "../controllers/statisticsController";
 import Statistics from "../models/statistics";
+import { convertSkillsMapToSkillIdList } from "../utils/utils";
 import DatabaseService from "./database.service";
 
-const _removeSubSkills = (
+const _decrementSubSkillsCount = (
   skillsMapToRemove: SkillsMap,
   primarySkillId: string,
   statistics: Statistics
-) => {
+): Statistics => {
   try {
+    const decrementedStatistics = { ...statistics };
     Object.keys(skillsMapToRemove).forEach((subSkillId) => {
       if (subSkillId === primarySkillId) {
         return;
       }
 
-      statistics.subSkillsMap[subSkillId].count--;
-      if (statistics.subSkillsMap[subSkillId].count < 0) {
-        statistics.subSkillsMap[subSkillId].count = 0;
+      decrementedStatistics.subSkillsMap[subSkillId].count--;
+      if (decrementedStatistics.subSkillsMap[subSkillId].count < 0) {
+        decrementedStatistics.subSkillsMap[subSkillId].count = 0;
       }
     });
 
-    return statistics;
+    return decrementedStatistics;
   } catch (error) {
     throw error;
   }
 };
 
-const _createStaticsWithPrimaryKey = async (
+const _getStaticsByPrimarySkillId = async (
   primarySkillId: string,
   skillsMapToAdd: SkillsMap
 ) => {
@@ -52,31 +54,52 @@ const _createStaticsWithPrimaryKey = async (
   }
 };
 
-const _addSubSkills = (
+const _incrementSubSkills = (
   skillsMapToAdd: SkillsMap,
   primarySkillId: string,
   statistics: Statistics
-) => {
+): Statistics => {
   try {
+    const updatedStatistics = { ...statistics };
+
     // create sub skills
     Object.keys(skillsMapToAdd).forEach((subSkillId) => {
-      if (subSkillId === primarySkillId) {
+      const isSameSkillId = subSkillId === primarySkillId;
+      const isSkillSelected = skillsMapToAdd[subSkillId];
+      const isSkillsAreCoupled =
+        skillsMapToAdd[subSkillId] && skillsMapToAdd[primarySkillId];
+
+      if (isSameSkillId || !isSkillSelected || !isSkillsAreCoupled) {
         return;
       }
 
-      if (statistics.subSkillsMap[subSkillId]) {
-        statistics.subSkillsMap[subSkillId].count++;
+      if (updatedStatistics.subSkillsMap[subSkillId]) {
+        updatedStatistics.subSkillsMap[subSkillId].count++;
       } else {
-        statistics.subSkillsMap[subSkillId] = {
+        updatedStatistics.subSkillsMap[subSkillId] = {
           count: 1,
           skill: skillsMapToAdd[subSkillId],
         };
       }
     });
 
-    return statistics;
+    return updatedStatistics;
   } catch (error) {
     throw error;
+  }
+};
+
+const _upsertStatistics = async (updatedStatistics: Statistics) => {
+  // FIXME: use `upsert` from mongodb
+  if (updatedStatistics._id) {
+    await DatabaseService.getInstance().collections.statistics?.updateOne(
+      { _id: new ObjectId(updatedStatistics._id) },
+      { $set: updatedStatistics }
+    );
+  } else {
+    await DatabaseService.getInstance().collections.statistics?.insertOne(
+      updatedStatistics
+    );
   }
 };
 
@@ -88,7 +111,7 @@ const removeSkillsFromStatistics = (skillsMapToRemove: SkillsMap) => {
           "primarySkill._id": new ObjectId(primarySkillId),
         })) as Statistics;
 
-      const subSKillsUpdatedStatistics = _removeSubSkills(
+      const updatedStatistics = _decrementSubSkillsCount(
         skillsMapToRemove,
         primarySkillId,
         statistics
@@ -96,7 +119,7 @@ const removeSkillsFromStatistics = (skillsMapToRemove: SkillsMap) => {
 
       await DatabaseService.getInstance().collections.statistics?.updateOne(
         { "primarySkill._id": new ObjectId(primarySkillId) },
-        { $set: subSKillsUpdatedStatistics }
+        { $set: updatedStatistics }
       );
     });
   } catch (error) {
@@ -107,32 +130,63 @@ const removeSkillsFromStatistics = (skillsMapToRemove: SkillsMap) => {
 const addSkillsToStatistics = (skillsMapToAdd: SkillsMap) => {
   try {
     Object.keys(skillsMapToAdd).forEach(async (primarySkillId) => {
+      // if data is null, nothing to add
       if (!skillsMapToAdd[primarySkillId]) {
         return;
       }
 
-      const statisticsWithPrimaryKey = await _createStaticsWithPrimaryKey(
+      const statistics = await _getStaticsByPrimarySkillId(
         primarySkillId,
         skillsMapToAdd
       );
 
-      const subSkillUpdatedStatistics = _addSubSkills(
+      const updatedStatistics = _incrementSubSkills(
         skillsMapToAdd,
         primarySkillId,
-        statisticsWithPrimaryKey
+        statistics
       );
 
-      if (subSkillUpdatedStatistics._id) {
-        await DatabaseService.getInstance().collections.statistics?.updateOne(
-          { _id: new ObjectId(subSkillUpdatedStatistics._id) },
-          { $set: subSkillUpdatedStatistics }
-        );
-      } else {
-        await DatabaseService.getInstance().collections.statistics?.insertOne(
-          subSkillUpdatedStatistics
-        );
-      }
+      await _upsertStatistics(updatedStatistics);
     });
+  } catch (error) {
+    throw error;
+  }
+};
+
+const updateStatistics = (
+  skillsMapToRemove: SkillsMap,
+  skillsMapToAdd: SkillsMap
+) => {
+  try {
+    // fetch statistics
+    const skillsMapToFetch = { ...skillsMapToAdd, ...skillsMapToRemove };
+
+    Object.keys(skillsMapToFetch).forEach(async (key) => {
+      const statistics = await _getStaticsByPrimarySkillId(
+        key,
+        skillsMapToFetch
+      );
+
+      // decrement statistics
+      const decrementedStatistics = _decrementSubSkillsCount(
+        skillsMapToRemove,
+        key,
+        statistics
+      );
+
+      // increment statistics
+      const incrementedStatistics = _incrementSubSkills(
+        skillsMapToAdd,
+        key,
+        decrementedStatistics
+      );
+
+      // update statistics
+      await _upsertStatistics(incrementedStatistics);
+    });
+
+    const skillIdList = convertSkillsMapToSkillIdList(skillsMapToFetch);
+    return skillIdList;
   } catch (error) {
     throw error;
   }
@@ -141,4 +195,5 @@ const addSkillsToStatistics = (skillsMapToAdd: SkillsMap) => {
 export const staticsService = {
   removeSkillsFromStatistics,
   addSkillsToStatistics,
+  updateStatistics,
 };

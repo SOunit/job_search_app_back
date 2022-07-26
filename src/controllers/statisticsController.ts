@@ -85,14 +85,13 @@ const updateSkills = async (
 
     const skillsMapToRemove = convertSkillListToMap(skills as Skill[]);
 
-    staticsService.removeSkillsFromStatistics(skillsMapToRemove);
-    staticsService.addSkillsToStatistics(skillsMapToAdd);
+    // update statistics
+    const skillIdList = staticsService.updateStatistics(
+      skillsMapToRemove,
+      skillsMapToAdd
+    );
 
-    const skillIdListToAdd = convertSkillsMapToSkillIdList(skillsMapToAdd);
-    const skillIdListToRemove =
-      convertSkillsMapToSkillIdList(skillsMapToRemove);
-
-    res.json({ skillIdList: [...skillIdListToAdd, ...skillIdListToRemove] });
+    res.json({ skillIdList });
   } catch (error) {
     (error as CustomError).statusCode = 500;
     next(error);

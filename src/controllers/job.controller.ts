@@ -201,8 +201,6 @@ export const deleteJob = async (
         userId,
       });
 
-    console.log(result);
-
     if (!result) {
       const error = new Error("Failed to delete job.");
       (error as CustomError).statusCode = 500;
