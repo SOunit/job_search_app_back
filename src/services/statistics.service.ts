@@ -12,7 +12,9 @@ const _decrementSubSkillsCount = (
   try {
     const decrementedStatistics = { ...statistics };
     Object.keys(skillsMapToRemove).forEach((subSkillId) => {
-      if (subSkillId === primarySkillId) {
+      const isSameSkillId = subSkillId === primarySkillId;
+      const isSubSkillExist = decrementedStatistics.subSkillsMap[subSkillId];
+      if (isSameSkillId || !isSubSkillExist) {
         return;
       }
 
