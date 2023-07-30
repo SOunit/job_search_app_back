@@ -1,3 +1,44 @@
 GET http://localhost:5000/api/jobs?skip=0&limit=5
 
 ###
+
+GET http://localhost:5000/api/jobs/62d9857c43e989f0419a3168
+
+###
+
+GET http://localhost:5000/api/jobs/search?title=&skip=0&limit=5
+
+###
+
+POST http://localhost:5000/api/jobs
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MmNjODVlN2M0YWMxNTEwNDdhOGQzM2YiLCJpYXQiOjE2NTg0MjI2MzEsImV4cCI6MTY1ODQyNjIzMX0.XB4o3e_61_Wv8q6OFa7eQGhTeOPaQwpDmqOFIpCyuwY
+
+{ 
+    "title": "title to update"
+    , "companyName": "test company"
+    , "city": "test city"
+    , "payment": 20
+    , "description": "test description"
+    , "skills": ["62c9f29178a9ce77381dd569"] 
+}
+
+###
+
+PATCH http://localhost:5000/api/jobs/62d9857c43e989f0419a3168
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MmNjODVlN2M0YWMxNTEwNDdhOGQzM2YiLCJpYXQiOjE2NTg0MjI2MzEsImV4cCI6MTY1ODQyNjIzMX0.XB4o3e_61_Wv8q6OFa7eQGhTeOPaQwpDmqOFIpCyuwY
+
+{ 
+    "title": "title update"
+    , "companyName": "test company update"
+    , "city": "test city update"
+    , "payment": 30
+    , "description": "test description update"
+    , "skills": ["62c9f29178a9ce77381dd569"] 
+}
+
+###
+
+DELETE http://localhost:5000/api/jobs/62ca0a91fd9b358c0bfa95fb
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MmM5ZjViN2Y2N2EwN2YyODRiNWFlZWEiLCJpYXQiOjE2NTc0MDgxMjIsImV4cCI6MTY1NzQxMTcyMn0.gbRUM0HbCOyWazSJXOekI3-gqUHPfraMOPH677FnWG4
