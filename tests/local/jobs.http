@@ -1,0 +1,3 @@
+GET http://localhost:5000/api/jobs?skip=0&limit=5
+
+###
