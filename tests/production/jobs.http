@@ -1,0 +1,3 @@
+GET https://job-search-app-back.herokuapp.com/api/jobs?skip=0&limit=5
+
+###
